@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright:           ©  2017 Infolava GmbH. All rights reserved.
+ ================================================================================
+    This file is part of TransALM
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+-->
+<openerp>
+	<data noupdate="1">
+	
+		<!-- Default role based on group project user -->
+		<record id="role_project_user" model="project.project.roles">
+			<field name="role_name">Project User</field>
+			<field name="description">Basic project user as defined in addon 'project'.</field>
+			<field name="related_group_ids" eval="[(6,0,[ref('project.group_project_user')])]" />
+		</record>
+		<!-- Cron runs only once after project_role is installaed to add basic role for existing project users -->
+		<record forcecreate="True" id="assign_role_member_project_cron" model="ir.cron">
+			<field name="name">One time cron to assign default role to members of existing projects</field>
+			<field eval="True" name="active"/>
+			<field name="user_id" ref="base.user_root"/>
+			<field name="interval_number">1</field>
+			<field name="interval_type">minutes</field>
+			<field eval="'project.project'" name="model"/>
+			<field eval="'assign_role_member_project'" name="function"/>
+			<field eval="'()'" name="args"/>
+			<field eval="0" name="priority"/>
+		</record>
+	</data>
+</openerp>

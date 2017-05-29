@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright: © 2017 Infolava GmbH. All rights reserved.
+      ================================================================================
+    This file is part of TransALM
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+-->
+<openerp>
+	<data noupdate="1">
+		
+		<!-- Define menu actions -->
+		<record id="action_project_project_roles_list_tree_view" model="ir.actions.act_window">
+			<field name="name">Project Roles</field>
+			<field name="res_model">project.project.roles</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+		</record>
+		<!-- Define menu actions END -->
+	
+		<!-- Define menus under menu Project Configuration -->
+		<menuitem id="menu_project_project_roles" parent="base.menu_main_pm" name="Project Roles" groups="project.group_project_manager"/>
+		
+		<menuitem id="menu_project_project_roles_list" parent="menu_project_project_roles"
+			name="Roles" action="action_project_project_roles_list_tree_view" groups="project.group_project_manager"/>
+		<!-- Define menus END -->
+		
+		<record model="ir.ui.view" id="view_project_project_roles_form"><!-- the form to edit an estimation -->
+			<field name="name">Project Roles</field>
+			<field name="model">project.project.roles</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Project roles" version="7.0">
+					<sheet>
+						<group>
+							<field name="role_name"/>
+							<newline/>
+							<field name="related_group_ids" widget="many2many_tags"/>
+							<newline/>
+							<field name="description" widget="html"/>
+						</group>
+					</sheet>
+				</form>
+			</field>
+		</record>
+		
+		<record model="ir.ui.view" id="view_project_project_roles_list"><!-- the form to edit an estimation -->
+			<field name="name">Project Roles</field>
+			<field name="model">project.project.roles</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Project roles">
+					<field name="role_name" />
+					<field name="related_group_ids" widget="many2many_tags"/>
+				</tree>
+			</field>
+		</record>
+	</data>
+</openerp>

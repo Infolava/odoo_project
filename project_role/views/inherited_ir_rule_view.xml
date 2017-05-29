@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright:           ©  2017 Infolava GmbH. All rights reserved.
+ ================================================================================
+    This file is part of TransALM
+
+    TransALM is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<openerp>
+	<data noupdate="1">
+		<!-- View form to extend the project view adding new tab Roles and updating the Team tab -->
+		<record model="ir.ui.view" id="inherited_ir_rule_form_view" >
+			<field name="name">Inherited ir_rule form view</field>
+			<field name="model">ir.rule</field>
+			<field name="inherit_id" ref="base.view_rule_form" />
+			<field name="arch" type="xml">
+				<xpath expr="/form/sheet/group/field[@name='global']" position="after">
+					<field name="primary"/>
+				</xpath>
+			</field>
+		</record>
+		
+		<record model="ir.ui.view" id="inherited_ir_rule_tree_view" >
+			<field name="name">Inherited ir_rule tree view</field>
+			<field name="model">ir.rule</field>
+			<field name="inherit_id" ref="base.view_rule_tree" />
+			<field name="arch" type="xml">
+				<xpath expr="//field[@name='global']" position="after">
+					<field name="primary"/>
+				</xpath>
+			</field>
+		</record>
+	</data>
+</openerp>

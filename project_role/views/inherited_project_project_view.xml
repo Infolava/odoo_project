@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright:           ©  2017 Infolava GmbH. All rights reserved.
+ ================================================================================
+    This file is part of TransALM
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+-->
+<openerp>
+	<data noupdate="1">
+		<!-- View form to extend the project view adding new tab Roles and updating the Team tab -->
+		<record model="ir.ui.view" id="view_project_role_tab_form2" >
+			<field name="name">project.role.tab.form</field>
+			<field name="model">project.project</field>
+			<field name="field_parent">child_ids</field>
+			<field name="inherit_id" ref="project.edit_project" />
+			<field name="arch" type="xml">
+				<xpath expr="/form/sheet/notebook/page[@name='team']" position="replace">
+					<page string="Team">
+						<field name="employee_role_id" string="Project Role">
+							<tree string="Project roles" editable="buttom">
+								<field name="project_id" invisible="1"/>
+								<field name="employee_id" context="{'current_model':'project.project'}" options="{'create': false, 'create_edit': false}"/>
+								<field name="project_role_id" domain="[('project_id', '=', parent.id)]" options="{'create': false, 'create_edit': false}"/>
+								<field name="effort_quotation"/> 
+							</tree>
+						</field>
+					</page>
+				</xpath>
+				<xpath expr="/form/sheet/notebook/page[last()]" position="after">
+					<page string="Roles">
+						<form string="Project roles">
+							<button name="%(action_assign_roles_wizard_view)d" type="action"
+								string="Add Role" icon="terp-tools" groups="project.group_project_manager" />
+							<field name="assigned_role_id" readonly="1">
+								<tree string="Project roles" create="0" delete="0">
+									<field name="role_id" readonly="1" />
+									<field name="selected_effort" readonly="1" />
+									<field name="effort_quotation" readonly="1" />
+								</tree>
+							</field>
+						</form>
+					</page>
+				</xpath>
+			</field>
+		</record>
+	</data>
+</openerp>

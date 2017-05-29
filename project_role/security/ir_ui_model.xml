@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright: © 2017 Infolava GmbH. All rights reserved.
+      ================================================================================
+    This file is part of TransALM
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+-->
+<openerp>
+	<data noupdate="1">
+	
+		<!-- Access Right Definition for project.project.roles model -->
+		<record model="ir.model.access" id="object_project_project_role_full_access">
+			<field name="perm_create">1</field>
+			<field name="perm_read">1</field>
+			<field name="perm_write">1</field>
+			<field name="perm_unlink">1</field>
+			<field name="name">project.project.roles [c1_r1_u1_d1]</field>
+			<field name="model_id" model="ir.model" search="[('model', '=', 'project.project.roles')]"/>
+			<field name="group_id" ref="project.group_project_manager"/>
+		</record>
+		
+		<record model="ir.model.access" id="object_project_project_role_RO">
+			<field name="perm_create"></field>
+			<field name="perm_read">1</field>
+			<field name="perm_write"></field>
+			<field name="perm_unlink"></field>
+			<field name="name">project.project.roles [c0_r1_u0_d0]</field>
+			<field name="model_id" model="ir.model" search="[('model', '=', 'project.project.roles')]"/>
+			<field name="group_id" ref="project.group_project_user"/>
+		</record>
+
+		<!-- Access Right Definition for project.role model-->
+		<record model="ir.model.access" id="object_project_role_full_access_PM">
+			<field name="perm_create">1</field>
+			<field name="perm_read">1</field>
+			<field name="perm_write">1</field>
+			<field name="perm_unlink">1</field>
+			<field name="name">project.roles [c1_r1_u1_d1]</field>
+			<field name="model_id" model="ir.model" search="[('model', '=', 'project.role')]"/>
+			<field name="group_id" ref="project.group_project_manager"/>
+		</record> 
+		
+		<record model="ir.model.access" id="object_project_role_RW_HrM">
+			<field name="perm_create"></field>
+			<field name="perm_read">1</field>
+			<field name="perm_write"></field>
+			<field name="perm_unlink"></field>
+			<field name="name">project.project.roles [c0_r1_u0_d0]</field>
+			<field name="model_id" model="ir.model" search="[('model', '=', 'project.role')]"/>
+			<field name="group_id" ref="base.group_hr_manager"/>
+		</record>
+		
+		<record model="ir.model.access" id="object_project_role_RO_project_user">
+			<field name="perm_create"></field>
+			<field name="perm_read">1</field>
+			<field name="perm_write"></field>
+			<field name="perm_unlink"></field>
+			<field name="name">project.project.roles [c0_r1_u0_d0]</field>
+			<field name="model_id" model="ir.model" search="[('model', '=', 'project.role')]"/>
+			<field name="group_id" ref="project.group_project_user"/>
+		</record>
+		
+		<record model="ir.model.access" id="project_employee_RW_PM">
+			<field name="perm_create">1</field>
+			<field name="perm_read">1</field>
+			<field name="perm_write">1</field>
+			<field name="perm_unlink">1</field>
+			<field name="name">project.members [c1_r1_u1_d1]</field>
+			<field name="model_id" model="ir.model" search="[('model', '=', 'project.member')]"/>
+			<field name="group_id" ref="project.group_project_user"/>
+		</record>
+
+		<record model="ir.model.access" id="poject_employee_RO_PU">
+			<field name="perm_create"></field>
+			<field name="perm_read">1</field>
+			<field name="perm_write"></field>
+			<field name="perm_unlink"></field>
+			<field name="name">project.members [c0_r1_u0_d0]</field>
+			<field name="model_id" model="ir.model" search="[('model', '=', 'project.member')]"/>
+			<field name="group_id" ref="project.group_project_user"/>
+		</record>
+		
+		<!-- Access Right Definition for hr.employee model -->
+		<record model="ir.model.access" id="object_employee_RW_PM">
+			<field name="perm_create"></field>
+			<field name="perm_read">1</field>
+			<field name="perm_write"></field>
+			<field name="perm_unlink"></field>
+			<field name="name">hr.employee [c0_r1_u0_d0]</field>
+			<field name="model_id" model="ir.model" search="[('model', '=', 'hr.employee')]"/>
+			<field name="group_id" ref="project.group_project_manager"/>
+		</record>
+
+		<!-- Add Read Only access right to group Project/users to hr.contract and resource module
+		needed to get employee availability -->
+		
+		<record model="ir.model.access" id="object_resource_calendar_leaves_RO_PU">
+			<field name="perm_create"></field>
+			<field name="perm_read">1</field>
+			<field name="perm_write"></field>
+			<field name="perm_unlink"></field>
+			<field name="name">resource.calendar.leaves [c0_r1_u0_d0]</field>
+			<field name="model_id" model="ir.model" search="[('model', '=', 'resource.calendar.leaves')]"/>
+			<field name="group_id" ref="project.group_project_user"/>
+		</record>
+
+		<record model="ir.model.access" id="object_resource_calendar_leaves_RO_HrM">
+			<field name="perm_create"></field>
+			<field name="perm_read">1</field>
+			<field name="perm_write"></field>
+			<field name="perm_unlink"></field>
+			<field name="name">resource.calendar.leaves [c0_r1_u0_d0]</field>
+			<field name="model_id" model="ir.model" search="[('model', '=', 'resource.calendar.leaves')]"/>
+			<field name="group_id" ref="base.group_hr_manager"/>
+		</record>
+
+		<record model="ir.model.access" id="object_hr_contract_RO_PU">
+			<field name="perm_create"></field>
+			<field name="perm_read">1</field>
+			<field name="perm_write"></field>
+			<field name="perm_unlink"></field>
+			<field name="name">hr.contract [c0_r1_u0_d0]</field>
+			<field name="model_id" model="ir.model" search="[('model', '=', 'hr.contract')]"/>
+			<field name="group_id" ref="project.group_project_user"/>
+		</record>
+		
+	</data>
+</openerp>	

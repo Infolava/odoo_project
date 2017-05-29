@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright: © 2017 Infolava GmbH. All rights reserved.
+      ================================================================================
+    This file is part of TransALM
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+-->
+<openerp><data noupdate="1">
+	<!-- Assign role to a project wizard -->
+			<record model="ir.ui.view" id="view_roles_project_wizard_form">
+			<field name="name">Select Roles</field>
+			<field name="model">project.role.wizard</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Project roles" version="7.0">
+					<field name="role_ids" />
+					<button name="assign_role" type="object" string="Save and Specify Needed Effort" />
+					<button name="assign_role_exit" type="object" string="Save and Exit" />
+					or
+					<button string="Cancel" special="cancel" />
+				</form>
+			</field>
+		</record>
+		<record model="ir.ui.view" id="view_project_roles_wizard_effort_form">
+			<field name="name">Specify Needed Effort</field>
+			<field name="model">project.role.wizard</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Project roles" version="7.0">
+					<field name="project_role_ids" widget="one2many_list">
+						<tree editable="top" create="0" delete="0">
+							<field name="role_id" />
+							<field name="effort_quotation" />
+						</tree>
+					</field>
+					<button name="save_needed_effort" type="object" string="Save" />
+					or
+					<button string="Cancel" special="cancel" />
+				</form>
+			</field>
+		</record>
+		<record id="action_assign_roles_wizard_view" model="ir.actions.act_window">
+			<field name="name">Assign role wizard</field>
+			<field name="res_model">project.role.wizard</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">form</field>
+			<field name="target">new</field>
+			<field name="view_id" ref="view_roles_project_wizard_form"/>
+		</record>
+		
+	</data>
+</openerp>

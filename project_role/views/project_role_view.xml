@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright:           ©  2017 Infolava GmbH. All rights reserved.
+ ================================================================================
+    This file is part of TransALM
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+-->
+<openerp>
+
+	<data noupdate="1">
+		<!-- Define menu actions-->
+		<record id="action_project_roles_list_tree_view" model="ir.actions.act_window">
+			<field name="name">Project Roles</field>
+			<field name="res_model">project.role</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree</field>
+		</record>
+		<!-- Define menus -->
+		<menuitem id="menu_project_roles" parent="menu_project_project_roles"
+				name="Role per Project" 
+				action="action_project_roles_list_tree_view" groups="project.group_project_manager"/>
+		<!-- Define menus END -->
+		
+
+		
+		<record model="ir.ui.view" id="view_project_roles_form">
+			<field name="name">Project Roles</field>
+			<field name="model">project.role</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Project roles" create="0" delete="0">
+					<field name="project_id" readonly="1"/>
+					<field name="role_id" readonly="1"/>
+					<field name="selected_effort" readonly="1"/>
+					<field name="effort_quotation" readonly="1"/>
+				</form>
+			</field>
+		</record>
+
+		<record model="ir.ui.view" id="view_project_roles_tree">
+			<field name="name">Project Roles</field>
+			<field name="model">project.role</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Project roles" create="0" delete="0">
+					<field name="project_id" readonly="1"/>
+					<field name="role_id" readonly="1"/>
+					<field name="selected_effort" readonly="1"/>
+					<field name="effort_quotation" readonly="1"/>
+				</tree>
+			</field>
+		</record>
+	</data>
+</openerp>

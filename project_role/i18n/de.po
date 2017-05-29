@@ -1,0 +1,472 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* project_role
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 8.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2016-10-03 15:17+0000\n"
+"PO-Revision-Date: 2016-03-25 08:39+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: project_role
+#: code:addons/project_role/models/project_project_roles.py:56
+#, python-format
+msgid "A role with the same groups exists already!"
+msgstr ""
+
+#. module: project_role
+#: code:addons/project_role/models/inherited_project_project.py:72
+#, python-format
+msgid "A user can not be a project member unless he is assigned to one role"
+msgstr ""
+
+#. module: project_role
+#: code:addons/project_role/models/inherited_hr_employee.py:109
+#: constraint:res.users:0
+#, python-format
+msgid "A user must be related to at most one employee"
+msgstr ""
+
+#. module: project_role
+#: model:ir.model,name:project_role.model_project_member
+msgid "Assign employee to a project"
+msgstr ""
+
+#. module: project_role
+#: model:ir.model,name:project_role.model_project_role
+msgid "Assign role to a project"
+msgstr "Rolle zum Projekt einfügen"
+
+#. module: project_role
+#: model:ir.actions.act_window,name:project_role.action_assign_roles_wizard_view
+msgid "Assign role wizard"
+msgstr ""
+
+#. module: project_role
+#: field:project.project,assigned_role_id:0
+msgid "Assigned Role"
+msgstr "Rolle"
+
+#. module: project_role
+#: field:hr.employee,assigned_role_ids:0
+#: field:project.role.wizard,project_role_ids:0
+msgid "Assigned Roles"
+msgstr "Rollen"
+
+#. module: project_role
+#: field:hr.employee,availability:0
+msgid "Availability (Hours/Month)"
+msgstr "Verfügbarkeit (Std/Monat)"
+
+#. module: project_role
+#: view:project.role.wizard:project_role.view_project_roles_wizard_effort_form
+#: view:project.role.wizard:project_role.view_roles_project_wizard_form
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#. module: project_role
+#: code:addons/project_role/models/project_member_role.py:243
+#, python-format
+msgid "Could not withdraw user %s from role %s. User owns some artifacts"
+msgstr ""
+
+#. module: project_role
+#: field:project.member,create_uid:0 field:project.project.roles,create_uid:0
+#: field:project.role,create_uid:0 field:project.role.wizard,create_uid:0
+msgid "Created by"
+msgstr "Erstellt von"
+
+#. module: project_role
+#: field:project.member,create_date:0 field:project.project.roles,create_date:0
+#: field:project.role,create_date:0 field:project.role.wizard,create_date:0
+msgid "Created on"
+msgstr "Erstellt am"
+
+#. module: project_role
+#: model:ir.model,name:project_role.model_project_project_roles
+msgid "Define and specify software project roles"
+msgstr ""
+
+#. module: project_role
+#: field:project.member,display_name:0
+#: field:project.project.roles,display_name:0 field:project.role,display_name:0
+#: field:project.role.wizard,display_name:0
+msgid "Display Name"
+msgstr ""
+
+#. module: project_role
+#: model:ir.model,name:project_role.model_hr_employee
+msgid "Employee"
+msgstr "Mitarbeiter"
+
+#. module: project_role
+#: code:addons/project_role/models/project_member_role.py:153
+#: sql_constraint:project.member:0
+#, python-format
+msgid "Employee already assigned to this role!"
+msgstr "Mitarbeiter trägt die Rolle schon!"
+
+#. module: project_role
+#: code:addons/project_role/models/inherited_project_project.py:76
+#: constraint:project.project:0
+#, python-format
+msgid "Employee effort exceed his availability"
+msgstr "Verfügbarkeit überschritten"
+
+#. module: project_role
+#: code:addons/project_role/models/project_member_role.py:149
+#: constraint:project.member:0
+#, python-format
+msgid "Employee effort must be positive"
+msgstr ""
+
+#. module: project_role
+#: field:project.project.roles,related_group_ids:0
+msgid "Groups"
+msgstr ""
+
+#. module: project_role
+#: field:project.member,id:0 field:project.project.roles,id:0
+#: field:project.role,id:0 field:project.role.wizard,id:0
+msgid "ID"
+msgstr ""
+
+#. module: project_role
+#: field:project.project,amount_invoiced:0
+msgid "Invoiced Amount"
+msgstr "Verrechnbar"
+
+#. module: project_role
+#: help:project.project,amount_max:0
+msgid "Keep empty if this contract is not limited to a total fixed price."
+msgstr ""
+
+#. module: project_role
+#: field:project.member,__last_update:0
+#: field:project.project.roles,__last_update:0
+#: field:project.role,__last_update:0 field:project.role.wizard,__last_update:0
+msgid "Last Modified on"
+msgstr ""
+
+#. module: project_role
+#: field:project.member,write_uid:0 field:project.project.roles,write_uid:0
+#: field:project.role,write_uid:0 field:project.role.wizard,write_uid:0
+msgid "Last Updated by"
+msgstr ""
+
+#. module: project_role
+#: field:project.member,write_date:0 field:project.project.roles,write_date:0
+#: field:project.role,write_date:0 field:project.role.wizard,write_date:0
+msgid "Last Updated on"
+msgstr "Zuletzt aktualisiert"
+
+#. module: project_role
+#: field:project.project,amount_max:0
+msgid "Max. Invoice Price"
+msgstr ""
+
+#. module: project_role
+#: field:project.member,employee_id:0
+msgid "Members"
+msgstr "Mitglieder"
+
+#. module: project_role
+#: code:addons/project_role/models/inherited_project_project.py:72
+#: code:addons/project_role/models/inherited_project_project.py:112
+#: code:addons/project_role/models/project_member_role.py:117
+#, python-format
+msgid "Operation Denied"
+msgstr ""
+
+#. module: project_role
+#: code:addons/project_role/models/project_member_role.py:243
+#, python-format
+msgid "Operation Denied!\n"
+msgstr ""
+
+#. module: project_role
+#: code:addons/project_role/models/inherited_hr_employee.py:93
+#, python-format
+msgid "Operation denied !"
+msgstr ""
+
+#. module: project_role
+#: code:addons/project_role/models/project_project_roles.py:76
+#: code:addons/project_role/models/project_project_roles.py:86
+#, python-format
+msgid "Operation not permitted !"
+msgstr ""
+
+#. module: project_role
+#: field:project.member,effort_quotation:0
+msgid "Planned(Hours/Month)"
+msgstr "Geplant(Std/Monat)"
+
+#. module: project_role
+#: code:addons/project_role/models/project_project_roles.py:51
+#, python-format
+msgid "Please Choose a related group to the role"
+msgstr ""
+
+#. module: project_role
+#: field:project.project,pricelist_id:0
+msgid "Pricelist"
+msgstr ""
+
+#. module: project_role
+#: field:ir.rule,primary:0
+msgid "Primary"
+msgstr "Hauptrolle"
+
+#. module: project_role
+#: model:ir.model,name:project_role.model_project_project
+#: field:project.member,project_id:0 field:project.role,project_id:0
+msgid "Project"
+msgstr "Projekt"
+
+#. module: project_role
+#: field:project.project,employee_role_id:0
+msgid "Project Members"
+msgstr "Projektmitglieder"
+
+#. module: project_role
+#: view:project.project:project_role.view_project_role_tab_form2
+msgid "Project Role"
+msgstr "Projektrolle"
+
+#. module: project_role
+#: model:ir.actions.act_window,name:project_role.action_project_project_roles_list_tree_view
+#: model:ir.actions.act_window,name:project_role.action_project_roles_list_tree_view
+#: model:ir.ui.menu,name:project_role.menu_project_project_roles
+#: field:project.role.wizard,role_ids:0
+msgid "Project Roles"
+msgstr "Projektrollen"
+
+#. module: project_role
+#: model:project.project.roles,description:project_role.soft_prj_role_prj_user
+#: model:project.project.roles,role_name:project_role.soft_prj_role_prj_user
+msgid "Project User Role"
+msgstr "Basismitglied"
+
+#. module: project_role
+#: view:project.project:project_role.view_project_role_tab_form2
+#: view:project.project.roles:project_role.view_project_project_roles_form
+#: view:project.project.roles:project_role.view_project_project_roles_list
+#: view:project.role:project_role.view_project_roles_form
+#: view:project.role:project_role.view_project_roles_tree
+#: view:project.role.wizard:project_role.view_project_roles_wizard_effort_form
+#: view:project.role.wizard:project_role.view_roles_project_wizard_form
+msgid "Project roles"
+msgstr "Projektrollen"
+
+#. module: project_role
+#: field:project.member,project_role_id:0 field:project.role,role_id:0
+#: field:project.role,role_name:0
+msgid "Role"
+msgstr "Rolle"
+
+#. module: project_role
+#: field:project.project.roles,description:0
+msgid "Role Description"
+msgstr "Beschreibung"
+
+#. module: project_role
+#: field:project.project.roles,role_name:0
+msgid "Role Name"
+msgstr "Rolle"
+
+#. module: project_role
+#: code:addons/project_role/models/project_member_role.py:80
+#: sql_constraint:project.role:0
+#, python-format
+msgid "Role already assigned to this project!"
+msgstr ""
+
+#. module: project_role
+#: code:addons/project_role/models/project_project_roles.py:46
+#: sql_constraint:project.project.roles:0
+#, python-format
+msgid "Role already exists!"
+msgstr ""
+
+#. module: project_role
+#: code:addons/project_role/models/project_member_role.py:150
+#: constraint:project.member:0
+#, python-format
+msgid "Role must belong to the project"
+msgstr ""
+
+#. module: project_role
+#: model:ir.ui.menu,name:project_role.menu_project_roles
+msgid "Role per Project"
+msgstr "Rollen in Projekten"
+
+#. module: project_role
+#: view:hr.employee:project_role.extended_view_employee_form
+#: model:ir.ui.menu,name:project_role.menu_project_project_roles_list
+#: view:project.project:project_role.view_project_role_tab_form2
+msgid "Roles"
+msgstr "Rollen"
+
+#. module: project_role
+#: view:hr.employee:project_role.extended_view_employee_form
+msgid "Roles and Projects"
+msgstr "Rollen und Projekten"
+
+#. module: project_role
+#: view:project.role.wizard:project_role.view_project_roles_wizard_effort_form
+msgid "Save"
+msgstr "Sichern"
+
+#. module: project_role
+#: view:project.role.wizard:project_role.view_roles_project_wizard_form
+msgid "Save and Exit"
+msgstr "Sichern und beenden"
+
+#. module: project_role
+#: view:project.role.wizard:project_role.view_roles_project_wizard_form
+msgid "Save and Specify Needed Effort"
+msgstr "Sichern und Bedarfspezifizieren"
+
+#. module: project_role
+#: code:addons/project_role/models/inherited_project_project.py:77
+#: code:addons/project_role/models/project_member_role.py:75
+#: constraint:project.project:0 constraint:project.role:0
+#, python-format
+msgid "Selected effort exceed role's effort quotation"
+msgstr "Plannung übersteigt Verfügbarkeit"
+
+#. module: project_role
+#: code:addons/project_role/models/inherited_hr_employee.py:93
+#, python-format
+msgid "Selected user already assigned to an other employee"
+msgstr ""
+
+#. module: project_role
+#: code:addons/project_role/models/inherited_hr_employee.py:50
+#: constraint:hr.employee:0
+#, python-format
+msgid "Selected user already assigned to an other employee "
+msgstr ""
+
+#. module: project_role
+#: field:project.project,project_role_ids:0
+msgid "Software Project Role"
+msgstr ""
+
+#. module: project_role
+#: code:addons/project_role/models/inherited_project_project.py:113
+#, python-format
+msgid ""
+"Some roles are assigned to users.\n"
+" Please withdraw the role from users before to withdraw the role from the "
+"project"
+msgstr ""
+
+#. module: project_role
+#: view:project.project:project_role.view_project_role_tab_form2
+msgid "Specify Role"
+msgstr "Rolle erfassen"
+
+#. module: project_role
+#: view:project.project:project_role.view_project_role_tab_form2
+msgid "Team"
+msgstr ""
+
+#. module: project_role
+#: help:project.project,pricelist_id:0
+msgid ""
+"The product to invoice is defined on the employee form, the price will be "
+"deducted by this pricelist on the product."
+msgstr ""
+
+#. module: project_role
+#: field:project.project,to_invoice:0
+msgid "Timesheet Invoicing Ratio"
+msgstr ""
+
+#. module: project_role
+#: field:project.role,selected_effort:0
+msgid "Total Allocated(Hours/Month)"
+msgstr ""
+
+#. module: project_role
+#: code:addons/project_role/models/project_member_role.py:76
+#: constraint:project.role:0
+#, python-format
+msgid "Total Needed must be positive"
+msgstr ""
+
+#. module: project_role
+#: field:project.role,effort_quotation:0
+msgid "Total Needed(Hours/Month)"
+msgstr ""
+
+#. module: project_role
+#: help:project.project,amount_invoiced:0
+msgid "Total invoiced"
+msgstr ""
+
+#. module: project_role
+#: model:ir.model,name:project_role.model_res_users
+msgid "Users"
+msgstr "Benutzer"
+
+#. module: project_role
+#: code:addons/project_role/models/project_project_roles.py:51
+#: code:addons/project_role/models/project_project_roles.py:56
+#, python-format
+msgid "Validate Error"
+msgstr ""
+
+#. module: project_role
+#: code:addons/project_role/models/project_project_roles.py:76
+#, python-format
+msgid ""
+"You can not delete roles associated to projects!\n"
+"This role is associated with:\n"
+" %s"
+msgstr ""
+
+#. module: project_role
+#: code:addons/project_role/models/project_member_role.py:117
+#, python-format
+msgid "You can not modify a project role"
+msgstr ""
+
+#. module: project_role
+#: code:addons/project_role/models/project_project_roles.py:86
+#, python-format
+msgid ""
+"You can not modify roles associated to projects!\n"
+"This role is associated with:\n"
+"%s"
+msgstr ""
+
+#. module: project_role
+#: help:project.project,to_invoice:0
+msgid ""
+"You usually invoice 100% of the timesheets. But if you mix fixed price and "
+"timesheet invoicing, you may use another ratio. For instance, if you do a "
+"20% advance invoice (fixed price, based on a sales order), you should "
+"invoice the rest on timesheet with a 80% ratio."
+msgstr ""
+
+#. module: project_role
+#: view:project.role.wizard:project_role.view_project_roles_wizard_effort_form
+#: view:project.role.wizard:project_role.view_roles_project_wizard_form
+msgid "or"
+msgstr ""
+
+#. module: project_role
+#: model:ir.model,name:project_role.model_project_role_wizard
+msgid "wizard to assign role to a project"
+msgstr ""

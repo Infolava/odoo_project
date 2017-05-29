@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright:           ©  2017 Infolava GmbH. All rights reserved.
+ ================================================================================
+    This file is part of TransALM
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+-->
+<openerp>
+	<data noupdate="1">
+		
+		<!-- Extend the hr.employee tree view -->
+		<record id="extended_view_employee_form" model="ir.ui.view">
+			<field name="name">hr.employee.extended.form</field>
+			<field name="model">hr.employee</field>
+			<field name="inherit_id" ref="hr.view_employee_form" />
+			<field name="arch" type="xml">
+				<field name="user_id" position="attributes">
+					<attribute name="required">1</attribute>
+				</field>
+				<xpath expr="/form/sheet/notebook/page[last()]" position="after">
+					<page string="Roles and Projects">
+						<field name="availability"/>
+						<newline/>
+						<field name="assigned_role_ids" readonly="1">
+							<tree string="Roles" create="0" delete="0">
+								<field name="project_id"/>
+								<field name="project_role_id"/>
+								<field name="effort_quotation"/>
+							</tree>
+						</field>
+					</page>
+				</xpath>
+			</field>
+		</record>
+		<record id="extended_view_employee_tree" model="ir.ui.view">
+			<field name="name">hr.employee.extended.tree</field>
+			<field name="model">hr.employee</field>
+			<field name="inherit_id" ref="hr.view_employee_tree" />
+			<field name="arch" type="xml">
+				<field name="coach_id" position="after">
+					<field name="availability"/>
+				</field>
+			</field>
+		</record>
+	</data>
+</openerp>

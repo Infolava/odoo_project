@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright:           ©  2017 Infolava GmbH. All rights reserved.
+ ================================================================================
+    This file is part of TransALM
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+-->
+<openerp>
+	<data noupdate="1">
+		<!-- Project Manager CRUD task of managed project -->
+		<record model="ir.rule" id="project_task_prj_manager_rule">
+			<field name="name">Task Rule project_task_prj_manager_rule</field> 
+			<field name="model_id" ref="project.model_project_task"/> 
+			<field name="primary" eval="True"/>
+			<field name="domain_force">['|',
+										'|',
+										('project_id','=',False), ('project_id.privacy_visibility','in',['public', 'portal', 'employees', 'followers']),
+										'&amp;',
+										('project_id.privacy_visibility','=','members'),('project_id.user_id','=', user.id)
+										]
+			</field>
+			<field name="groups" eval="[(4, ref('project.group_project_manager'))]"/>
+		</record>
+		
+		<!-- Project Manager CRUD  of managed project -->
+		<record model="ir.rule" id="project_prj_manager_rule">
+			<field name="name">Project Rule project_prj_manager_rule</field> 
+			<field name="model_id" ref="project.model_project_project"/> 
+			<field name="primary" eval="True"/>
+			<field name="domain_force">['|',
+										('privacy_visibility','in',['public', 'portal', 'employees', 'followers']),
+										'&amp;',
+										('privacy_visibility','=','members'),('user_id','=', user.id)
+										]
+			</field>
+			<field name="groups" eval="[(4, ref('project.group_project_manager'))]"/>
+		</record>
+		
+		
+		<!-- Project user read only open projects and project on which the are members -->
+		<record model="ir.rule" id="project_role.project_base_user_rule">
+			<field name="name">Project Rule project_base_user_rule</field> 
+			<field name="model_id" ref="project.model_project_project"/> 
+			<field name="primary" eval="True"/>
+			<field name="domain_force">[
+										'|',
+										('privacy_visibility','in',['public', 'portal', 'employees', 'followers']),
+										'&amp;',
+										('privacy_visibility','=','members'),('members','in', [user.id])]
+			</field>
+			<field name="groups" eval="[(4, ref('project.group_project_user'))]"/>
+		</record>
+		
+		<record model="ir.rule" id="project_role.create_task_base_user_rule">
+			<field name="name">Create Task Rule create_task_base_user_rule</field> 
+			<field name="model_id" ref="project.model_project_task"/>
+			<field name="primary" eval="True"/>
+			<field name="domain_force">[
+										'|',
+										'|',
+										('project_id','=',False), ('project_id.privacy_visibility','in',['public', 'portal', 'employees', 'followers']),
+										'&amp;',
+										('project_id.privacy_visibility','=','members'),('project_id.members','in', [user.id])]
+			</field>
+			<field name="groups" eval="[(4, ref('project.group_project_user'))]"/>
+			<field name="perm_read" eval="False"/>
+			<field name="perm_write" eval="False"/>
+			<field name="perm_unlink" eval="False"/>
+		</record>
+		
+		<record model="ir.rule" id="project_role.project_task_base_user_rule">
+			<field name="name">Task Rule project_task_base_user_rule</field> 
+			<field name="model_id" ref="project.model_project_task"/>
+			<field name="primary" eval="True"/>
+			<field name="domain_force">['|',
+										'|',
+										'|',
+										('user_id', '=', user.id),
+										('project_id','=',False), ('project_id.privacy_visibility','in',['public', 'portal', 'employees', 'followers']),
+										'&amp;',
+										('project_id.privacy_visibility','=','members'),('project_id.members','in', [user.id])]
+			</field>
+			<field name="groups" eval="[(4, ref('project.group_project_user'))]"/>
+			<field name="perm_create" eval="False"/>
+		</record>
+		
+		<!-- Add member visibility to project and task rules -->
+		<record model="ir.rule" id="project_member_task_rule">
+			<field name="name">Task HR and Product Manager Rule</field>
+			<field name="model_id" ref="project.model_project_task" />
+			<field name="domain_force">[('project_id.privacy_visibility', 'in', ['public', 'portal', 'employees', 'followers', 'members'])]</field>
+			<field name="groups" eval="[(4, ref('base.group_user')), (4,ref('project.group_project_user')),(4,ref('base.group_hr_manager')), (4, ref('base.group_sale_manager'))]"/>
+		</record>
+		
+		<record model="ir.rule" id="project_member_project_rule">
+			<field name="name">Task HR and Product Manager Rule</field>
+			<field name="model_id" ref="project.model_project_project" />
+			<field name="domain_force">[('privacy_visibility', 'in', ['public', 'portal', 'employees', 'followers', 'members'])]</field>
+			<field name="groups" eval="[(4, ref('base.group_user')), (4,ref('project.group_project_user')),(4,ref('base.group_hr_manager')), (4, ref('base.group_sale_manager'))]"/>
+		</record>
+			
+	</data>
+</openerp>
