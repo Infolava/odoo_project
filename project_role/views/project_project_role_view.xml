@@ -21,9 +21,7 @@
 		<!-- Define menu actions END -->
 	
 		<!-- Define menus under menu Project Configuration -->
-		<menuitem id="menu_project_project_roles" parent="base.menu_main_pm" name="Project Roles" groups="project.group_project_manager"/>
-		
-		<menuitem id="menu_project_project_roles_list" parent="menu_project_project_roles"
+		<menuitem id="menu_roles_definitions" parent="base.menu_definitions"
 			name="Roles" action="action_project_project_roles_list_tree_view" groups="project.group_project_manager"/>
 		<!-- Define menus END -->
 		
