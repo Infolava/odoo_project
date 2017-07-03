@@ -24,7 +24,9 @@
 								<field name="project_id" invisible="1"/>
 								<field name="employee_id" context="{'current_model':'project.project'}" options="{'create': false, 'create_edit': false}"/>
 								<field name="project_role_id" domain="[('project_id', '=', parent.id)]" options="{'create': false, 'create_edit': false}"/>
-								<field name="effort_quotation"/> 
+                                <field name="date_in_role_from"/>
+                                <field name="date_in_role_until"/>
+								<field name="hours_planned_monthly"/> 
 							</tree>
 						</field>
 					</page>
@@ -38,7 +40,7 @@
 								<tree string="Project roles" create="0" delete="0">
 									<field name="role_id" readonly="1" />
 									<field name="selected_effort" readonly="1" />
-									<field name="effort_quotation" readonly="1" />
+									<field name="hours_planned_monthly" readonly="1" />
 								</tree>
 							</field>
 						</form>

@@ -31,6 +31,9 @@ from openerp.osv import osv, fields
 from openerp.tools.translate import _
 from openerp import SUPERUSER_ID
 import itertools
+from datetime import date, datetime, timedelta
+from calendar import monthrange
+
 
 class project_role(osv.osv):
     """
@@ -47,7 +50,7 @@ class project_role(osv.osv):
         for role_id in ids :
             project_member_ids = self.pool.get('project.member').search(cr, uid, [('project_role_id', '=', role_id)], context = context)
             project_members = self.pool.get('project.member').browse(cr, uid, project_member_ids, context)
-            selected_effort = [member.effort_quotation for member in project_members]
+            selected_effort = [member.hours_planned_monthly for member in project_members]
             result[role_id] = sum(selected_effort)
         return result
 
@@ -55,25 +58,25 @@ class project_role(osv.osv):
                 'project_id' : fields.many2one('project.project', string = 'Project', readonly = True),
                 'role_id' : fields.many2one('project.project.roles', string = 'Role', readonly = True),
                 'role_name' : fields.related('role_id', 'role_name', relation = 'project.project.roles', type = 'char', string = 'Role'),
-                'effort_quotation' : fields.integer(string = "Total Needed(Hours/Month)"),
+                'hours_planned_monthly' : fields.integer(string = "Total Needed(Hours/Month)"),
                 'selected_effort' : fields.function(_get_selected_effort, type = 'integer', string = "Total Allocated(Hours/Month)"),
                 }
 
     def _check_selected_effort(self, cr, uid, ids):
         for role in self.browse(cr, uid, ids) :
-            if role.selected_effort > role.effort_quotation :
+            if role.selected_effort > role.hours_planned_monthly:
                 return False
         return True
     
-    def _check_effort_quotation(self, cr, uid, ids):
+    def _check_hours_planned_monthly(self, cr, uid, ids):
         for role in self.browse(cr, uid, ids) :
-            if role.effort_quotation < 0 :
+            if role.hours_planned_monthly< 0 :
                 return False
         return True
 
     _constraints = [
-                    (_check_selected_effort, _("Selected effort exceed role's effort quotation"), ['effort_quotation']),
-                    (_check_effort_quotation, _("Total Needed must be positive"), ['effort_quotation']),
+                    (_check_selected_effort, _("Selected effort exceed role's monthly average"), ['hours_planned_monthly']),
+                    (_check_hours_planned_monthly, _("Total Needed must be positive"), ['hours_planned_monthly']),
                     ]
 
     _sql_constraints = [
@@ -125,17 +128,84 @@ class project_member_role(osv.osv):
     """
     _name = 'project.member'
     _description = 'Assign employee to a project'
-
+    
+    def _compute_total_planned(self, cr, uid, ids, field_name, arg, context = None):
+        pass
+     
+    def _compute_real_planned(self, cr, uid, ids, field_name, arg, context = None):
+        result = {}
+        for project_member in self.browse(cr, uid, ids, context) :
+            start_dt = datetime.strptime(project_member.date_in_role_from, "%Y-%m-%d %H:%M:%S")
+            end_dt = datetime.strptime(project_member.date_in_role_until, "%Y-%m-%d %H:%M:%S")
+            project_role_availibility_hours = 0
+            real_planned = 0
+            if project_member.employee_id.contract_id:
+                if project_member.employee_id.contract_id.working_hours.attendance_ids :
+                    
+                    for i in range(start_dt.month, end_dt.month+1) :
+                        mdays = monthrange(start_dt.year, i)[1]
+                        project_role_availibility_hours = 0
+                        date_from = start_dt
+                        date_to = end_dt
+                        if i != start_dt.month and i != end_dt.month :
+                            first_day_of_month = str(start_dt.year) + "-" + str(i) + "-" + "01 00:00:00"
+                            first_day_of_month = datetime.strptime(first_day_of_month, "%Y-%m-%d %H:%M:%S")
+                            last_day_of_month = str(start_dt.year) + "-" + str(i) + "-" + str(mdays) + " 23:59:59"
+                            last_day_of_month = datetime.strptime(last_day_of_month, "%Y-%m-%d %H:%M:%S")
+                            date_from = first_day_of_month
+                            date_to = last_day_of_month
+                            project_role_availibility_hours = int(round(self.pool.get('resource.calendar').interval_hours_get(cr, uid, project_member.employee_id.contract_id.working_hours.id, date_from, date_to)))
+                            real_planned += min(project_role_availibility_hours, project_member.hours_planned_monthly)
+                        elif i == start_dt.month and i != end_dt.month :
+                            last_day_of_month = str(start_dt.year) + "-" + str(i) + "-" + str(mdays) + " 23:59:59"
+                            last_day_of_month = datetime.strptime(last_day_of_month, "%Y-%m-%d %H:%M:%S")
+                            date_to = last_day_of_month
+                            project_role_availibility_hours = int(round(self.pool.get('resource.calendar').interval_hours_get(cr, uid, project_member.employee_id.contract_id.working_hours.id, date_from, date_to)))
+                            real_planned += min(project_role_availibility_hours, project_member.hours_planned_monthly)
+                        elif i != start_dt.month and i == end_dt.month :
+                            first_day_of_month = str(start_dt.year) + "-" + str(i) + "-" + "01 00:00:00"
+                            first_day_of_month = datetime.strptime(first_day_of_month, "%Y-%m-%d %H:%M:%S")
+                            date_from = first_day_of_month
+                            project_role_availibility_hours = int(round(self.pool.get('resource.calendar').interval_hours_get(cr, uid, project_member.employee_id.contract_id.working_hours.id, date_from, date_to)))
+                            real_planned += min(project_role_availibility_hours, project_member.hours_planned_monthly)
+                        else:
+                            project_role_availibility_hours = int(round(self.pool.get('resource.calendar').interval_hours_get(cr, uid, project_member.employee_id.contract_id.working_hours.id, start_dt, end_dt)))
+                            real_planned += min(project_role_availibility_hours, project_member.hours_planned_monthly)
+            result[project_member.id] = real_planned
+        return result
+    
+    def _compute_remaining_hours(self, cr, uid, ids, field_name, arg, context = None):
+        result = {}
+        for project_member in self.browse(cr, uid, ids, context) :
+            working_task_ids = self.pool.get("project.task").search(cr, uid,
+            [('project_id','=', project_member.project_id.id),
+             ('user_id', '=', project_member.employee_id.user_id.id),
+             ('date_start', '>=',project_member.date_in_role_from),
+             ('date_deadline', '=',project_member.date_in_role_until)])
+            
+            working_task = self.pool.get("project.task").browse(cr, uid, working_task_ids)
+            spend_hours = 0.0
+            for working_task in working_task :
+                spend_hours += working_task.effective_hours
+            hours_planned_remaining = project_member.hours_planned_real - spend_hours
+            result [project_member.id] = hours_planned_remaining
+        return result
+    
     _columns = {
                 'project_id' : fields.many2one('project.project', string = 'Project', readonly = True),
                 'project_role_id' : fields.many2one('project.role', string = 'Role', required = True),
-                'effort_quotation' : fields.integer(string = "Planned(Hours/Month)", required = True),
+                'hours_planned_monthly' : fields.integer(string = "Monthly Average", required = True),
                 'employee_id' : fields.many2one('hr.employee', string = 'Members', required = True),
+                'date_in_role_from': fields.datetime(string = 'Date From', required = True),
+                'date_in_role_until': fields.datetime(string = 'Date To', required = True),
+                'hours_planned_total': fields.function(_compute_total_planned, type = 'integer', string = 'Planned', readonly = True),
+                'hours_planned_real': fields.function(_compute_real_planned, type = 'integer', string = 'Real Planned', readonly = True),#effective hours
+                'hours_planned_remaining': fields.function(_compute_remaining_hours, type = 'integer', string = 'Remaining Hours', readonly = True),
                 }
-
+    
     def _check_employee_effort(self, cr, uid, ids):
         for member in self.browse(cr, uid, ids) :
-            if  member.effort_quotation < 0 :
+            if  member.hours_planned_monthly< 0 :
                 return False
         return True
 
@@ -145,9 +215,20 @@ class project_member_role(osv.osv):
                 return False
         return True
     
+    def _check_date_in_role_from(self, cr, uid, ids):
+        for member in self.browse(cr, uid, ids) :
+            if member.project_id.date_start:
+                if member.date_in_role_from  < member.project_id.date_start or member.date_in_role_until < member.project_id.date_start:
+                    return False
+            if member.project_id.date:
+                if member.date_in_role_from  > member.project_id.date or member.date_in_role_until > member.project_id.date:
+                    return False
+        return True
+    
     _constraints = [
-                    (_check_employee_effort, _("Employee effort must be positive"), ['effort_quotation']),
+                    (_check_employee_effort, _("Employee effort must be positive"), ['hours_planned_monthly']),
                     (_check_role_in_project, _("Role must belong to the project"), ['project_role_id', 'project_id']),
+                    (_check_date_in_role_from, _("The Date From and the Date Until should be included between the project Start Date and End Date"), ['date_in_role_from', 'date_in_role_until']),
                     ]
     _sql_constraints = [
                         ('unique_employee_project_role', 'UNIQUE (project_role_id, employee_id)', _('Employee already assigned to this role!')),
@@ -250,7 +331,7 @@ class project_member_role(osv.osv):
 
     def write(self, cr, uid, ids, values, context = None):
         project_members = self.browse(cr, uid, ids, context)
-        project_members_read = self.read(cr, uid, ids, context = context)
+        project_members_read = self.read(cr, uid, ids, context)
         if values.has_key('employee_id') or values.has_key('project_role_id') :
             self.ensure_members_own_no_artifacts(cr, uid, project_members_read, context)
         employee_ids = [member.employee_id.id for member in project_members]

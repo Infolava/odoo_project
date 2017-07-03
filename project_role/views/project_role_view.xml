@@ -35,7 +35,7 @@
 					<field name="project_id" readonly="1"/>
 					<field name="role_id" readonly="1"/>
 					<field name="selected_effort" readonly="1"/>
-					<field name="effort_quotation" readonly="1"/>
+					<field name="hours_planned_monthly" readonly="1"/>
 				</form>
 			</field>
 		</record>
@@ -49,7 +49,7 @@
 					<field name="project_id" readonly="1"/>
 					<field name="role_id" readonly="1"/>
 					<field name="selected_effort" readonly="1"/>
-					<field name="effort_quotation" readonly="1"/>
+					<field name="hours_planned_monthly" readonly="1"/>
 				</tree>
 			</field>
 		</record>

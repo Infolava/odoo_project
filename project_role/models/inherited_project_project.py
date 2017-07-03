@@ -60,7 +60,7 @@ class project(osv.osv):
     def _check_selected_effort(self, cr, uid, ids):
         for project in self.browse(cr, uid, ids) :
             for role in project.assigned_role_id :
-                if role.selected_effort > role.effort_quotation :
+                if role.selected_effort > role.hours_planned_monthly :
                     return False
         return True
 
@@ -150,7 +150,7 @@ class project(osv.osv):
                 self.write(cr, uid, [project_id], {'employee_role_id':[[0, False, 
                                                                        {'project_role_id' : project.assigned_role_id[0].id, 
                                                                         'employee_id' : emp, 
-                                                                        'effort_quotation': 0} \
+                                                                        'hours_planned_monthly': 0} \
                                                                        ]]\
                                                   }, context)
         return

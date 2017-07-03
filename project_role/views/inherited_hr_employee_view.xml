@@ -28,7 +28,11 @@
 							<tree string="Roles" create="0" delete="0">
 								<field name="project_id"/>
 								<field name="project_role_id"/>
-								<field name="effort_quotation"/>
+								<field name="date_in_role_from"/>
+								<field name="date_in_role_until"/>
+								<field name="hours_planned_total"/>
+								<field name="hours_planned_real"/>
+								<field name="hours_planned_remaining"/>
 							</tree>
 						</field>
 					</page>

@@ -33,7 +33,7 @@
 					<field name="project_role_ids" widget="one2many_list">
 						<tree editable="top" create="0" delete="0">
 							<field name="role_id" />
-							<field name="effort_quotation" />
+							<field name="hours_planned_monthly" />
 						</tree>
 					</field>
 					<button name="save_needed_effort" type="object" string="Save" />

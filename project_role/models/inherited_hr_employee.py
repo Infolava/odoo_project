@@ -77,7 +77,7 @@ class hr_employee(osv.osv):
             # search only on open projects
             project_member_ids = self.pool.get('project.member').search(cr, uid, [('employee_id', '=', employee_id), ('project_id.state', 'in', ['open'])], context = context)
             project_members = self.pool.get('project.member').browse(cr, uid, project_member_ids, context)
-            employee_effort = [member.effort_quotation for member in project_members]
+            employee_effort = [member.hours_planned_monthly for member in project_members]
             availability = self._get_working_hours_month_average(cr, uid, employee_id, context)
             result[employee_id] = availability - sum(employee_effort)
         return result
