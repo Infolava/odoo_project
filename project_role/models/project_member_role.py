@@ -30,10 +30,10 @@
 from openerp.osv import osv, fields
 from openerp.tools.translate import _
 from openerp import SUPERUSER_ID
+from openerp.tools import DEFAULT_SERVER_DATE_FORMAT as DF
 import itertools
 from datetime import date, datetime, timedelta
 from calendar import monthrange
-
 
 class project_role(osv.osv):
     """
@@ -135,42 +135,22 @@ class project_member_role(osv.osv):
     def _compute_real_planned(self, cr, uid, ids, field_name, arg, context = None):
         result = {}
         for project_member in self.browse(cr, uid, ids, context) :
-            start_dt = datetime.strptime(project_member.date_in_role_from, "%Y-%m-%d %H:%M:%S")
-            end_dt = datetime.strptime(project_member.date_in_role_until, "%Y-%m-%d %H:%M:%S")
-            project_role_availibility_hours = 0
+            role_start_dt = datetime.strptime(project_member.date_in_role_from, DF)
+            role_end_dt = datetime.strptime(project_member.date_in_role_until, DF)
             real_planned = 0
             if project_member.employee_id.contract_id:
                 if project_member.employee_id.contract_id.working_hours.attendance_ids :
-                    
-                    for i in range(start_dt.month, end_dt.month+1) :
-                        mdays = monthrange(start_dt.year, i)[1]
-                        project_role_availibility_hours = 0
-                        date_from = start_dt
-                        date_to = end_dt
-                        if i != start_dt.month and i != end_dt.month :
-                            first_day_of_month = str(start_dt.year) + "-" + str(i) + "-" + "01 00:00:00"
-                            first_day_of_month = datetime.strptime(first_day_of_month, "%Y-%m-%d %H:%M:%S")
-                            last_day_of_month = str(start_dt.year) + "-" + str(i) + "-" + str(mdays) + " 23:59:59"
-                            last_day_of_month = datetime.strptime(last_day_of_month, "%Y-%m-%d %H:%M:%S")
-                            date_from = first_day_of_month
-                            date_to = last_day_of_month
-                            project_role_availibility_hours = int(round(self.pool.get('resource.calendar').interval_hours_get(cr, uid, project_member.employee_id.contract_id.working_hours.id, date_from, date_to)))
-                            real_planned += min(project_role_availibility_hours, project_member.hours_planned_monthly)
-                        elif i == start_dt.month and i != end_dt.month :
-                            last_day_of_month = str(start_dt.year) + "-" + str(i) + "-" + str(mdays) + " 23:59:59"
-                            last_day_of_month = datetime.strptime(last_day_of_month, "%Y-%m-%d %H:%M:%S")
-                            date_to = last_day_of_month
-                            project_role_availibility_hours = int(round(self.pool.get('resource.calendar').interval_hours_get(cr, uid, project_member.employee_id.contract_id.working_hours.id, date_from, date_to)))
-                            real_planned += min(project_role_availibility_hours, project_member.hours_planned_monthly)
-                        elif i != start_dt.month and i == end_dt.month :
-                            first_day_of_month = str(start_dt.year) + "-" + str(i) + "-" + "01 00:00:00"
-                            first_day_of_month = datetime.strptime(first_day_of_month, "%Y-%m-%d %H:%M:%S")
-                            date_from = first_day_of_month
-                            project_role_availibility_hours = int(round(self.pool.get('resource.calendar').interval_hours_get(cr, uid, project_member.employee_id.contract_id.working_hours.id, date_from, date_to)))
-                            real_planned += min(project_role_availibility_hours, project_member.hours_planned_monthly)
-                        else:
-                            project_role_availibility_hours = int(round(self.pool.get('resource.calendar').interval_hours_get(cr, uid, project_member.employee_id.contract_id.working_hours.id, start_dt, end_dt)))
-                            real_planned += min(project_role_availibility_hours, project_member.hours_planned_monthly)
+                    date_from = role_start_dt
+                    while date_from < role_end_dt :
+                        date_to = date_from
+                        if date_from.month == role_end_dt.month and date_from.year == role_end_dt.year :
+                            date_to = role_end_dt
+                        else :
+                            date_to = date_to.replace(day = monthrange(date_from.year, date_from.month)[1])
+                        project_role_availibility_hours = int(round(self.pool.get('resource.calendar').interval_hours_get(cr, uid, project_member.employee_id.contract_id.working_hours.id, date_from, date_to)))
+                        real_planned += min(project_role_availibility_hours, project_member.hours_planned_monthly)
+                        date_from = date_to + timedelta(days=1)
+                        
             result[project_member.id] = real_planned
         return result
     
@@ -196,8 +176,8 @@ class project_member_role(osv.osv):
                 'project_role_id' : fields.many2one('project.role', string = 'Role', required = True),
                 'hours_planned_monthly' : fields.integer(string = "Monthly Average", required = True),
                 'employee_id' : fields.many2one('hr.employee', string = 'Members', required = True),
-                'date_in_role_from': fields.datetime(string = 'Date From', required = True),
-                'date_in_role_until': fields.datetime(string = 'Date To', required = True),
+                'date_in_role_from': fields.date(string = 'Date From', required = True),
+                'date_in_role_until': fields.date(string = 'Date To', required = True),
                 'hours_planned_total': fields.function(_compute_total_planned, type = 'integer', string = 'Planned', readonly = True),
                 'hours_planned_real': fields.function(_compute_real_planned, type = 'integer', string = 'Real Planned', readonly = True),#effective hours
                 'hours_planned_remaining': fields.function(_compute_remaining_hours, type = 'integer', string = 'Remaining Hours', readonly = True),
