@@ -147,6 +147,7 @@ class project_member_role(osv.osv):
                             date_to = role_end_dt
                         else :
                             date_to = date_to.replace(day = monthrange(date_from.year, date_from.month)[1])
+                        date_to = date_to + timedelta(days=1)
                         project_role_availibility_hours = int(round(self.pool.get('resource.calendar').get_working_hours(cr, \
                                                                                                                          uid, \
                                                                                                                          project_member.employee_id.contract_id.working_hours.id, \
@@ -154,7 +155,7 @@ class project_member_role(osv.osv):
                                                                                                                          date_to, \
                                                                                                                          compute_leaves = True)))
                         real_planned += min(project_role_availibility_hours, project_member.hours_planned_monthly)
-                        date_from = date_to + timedelta(days=1)
+                        date_from = date_to
                         
             result[project_member.id] = real_planned
         return result
