@@ -31,8 +31,9 @@ from openerp.osv import osv, fields
 from openerp.tools.translate import _
 from openerp import SUPERUSER_ID
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT as DF
+from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT as DTF
 import itertools
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, time
 from calendar import monthrange
 
 class project_role(osv.osv):
@@ -129,8 +130,37 @@ class project_member_role(osv.osv):
     _name = 'project.member'
     _description = 'Assign employee to a project'
     
+    def _compute_public_holidays(self, cr, uid, ids,employee, dt_from, dt_until, context = None):
+        public_holiday = 0
+        while dt_from <= dt_until:
+            date_dt = dt_from
+            if employee.work_scheduled_on_day(date_dt):
+                pass
+        return public_holiday
+            
+    def _compute_approved_leaves(self, cr, uid, ids,employee, dt_from, dt_until, context = None):
+        holidays_ids = self.pool.get('hr.holidays').search(cr, uid, [('state','=','validate'),('employee_id','=',employee.id),('type','=','remove'),('date_from', '>=', dt_from),('date_to', '<=', dt_until)])
+        if holidays_ids : 
+            holidays = self.pool.get('hr.holidays').browse(cr, uid, holidays_ids)
+            hours = 0.0
+            for hol in holidays :
+                date_from = datetime.strptime(hol.date_from, DTF)
+                date_to = datetime.strptime(hol.date_to, DTF)
+                while date_from < date_to :
+                    if employee.contract_id and employee.contract_id.working_hours:
+                        hours += self.pool.get('resource.calendar').get_working_hours(cr,uid,employee.contract_id.working_hours.id,date_from,date_to)
+                        date_from = date_from + timedelta(days=1)
+        return hours
+            
+    
+    
     def _compute_total_planned(self, cr, uid, ids, field_name, arg, context = None):
-        pass
+        result = {}
+        for project_member in self.browse(cr, uid, ids, context) :
+            role_start_dt = project_member.date_in_role_from +" 00:00:00"
+            role_end_dt = project_member.date_in_role_until + " 23:59:59"
+            result [project_member.id] = project_member.hours_planned_real + self._compute_approved_leaves(cr, uid, ids, project_member.employee_id, role_start_dt, role_end_dt)
+        return result
      
     def _compute_real_planned(self, cr, uid, ids, field_name, arg, context = None):
         result = {}
