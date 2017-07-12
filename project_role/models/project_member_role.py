@@ -131,22 +131,24 @@ class project_member_role(osv.osv):
     _description = 'Assign employee to a project'
     
     def _compute_public_holidays(self, cr, uid, ids,employee, dt_from, dt_until, context = None):
-        public_holiday = 0
-        while dt_from <= dt_until:
-            date_dt = dt_from
-            if employee.work_scheduled_on_day(date_dt):
-                pass
-        return public_holiday
+        date_from = datetime.strptime(dt_from, DTF)
+        date_to = datetime.strptime(dt_until, DTF)
+        hours = 0.0
+        while date_from <= date_to:
+            if self.pool.get('hr.holidays.public').is_public_holiday(cr, SUPERUSER_ID,date_from):
+                hours += self.pool.get('resource.calendar').get_working_hours_of_date(cr,uid,employee.contract_id.working_hours.id, date_from)
+            date_from = date_from + timedelta(days=1)
+        return hours
             
     def _compute_approved_leaves(self, cr, uid, ids,employee, dt_from, dt_until, context = None):
         holidays_ids = self.pool.get('hr.holidays').search(cr, uid, [('state','=','validate'),('employee_id','=',employee.id),('type','=','remove'),('date_from', '>=', dt_from),('date_to', '<=', dt_until)])
+        hours = 0.0
         if holidays_ids : 
             holidays = self.pool.get('hr.holidays').browse(cr, uid, holidays_ids)
-            hours = 0.0
             for hol in holidays :
                 date_from = datetime.strptime(hol.date_from, DTF)
                 date_to = datetime.strptime(hol.date_to, DTF)
-                while date_from < date_to :
+                while date_from <= date_to :
                     if employee.contract_id and employee.contract_id.working_hours:
                         hours += self.pool.get('resource.calendar').get_working_hours(cr,uid,employee.contract_id.working_hours.id,date_from,date_to)
                         date_from = date_from + timedelta(days=1)
@@ -159,7 +161,9 @@ class project_member_role(osv.osv):
         for project_member in self.browse(cr, uid, ids, context) :
             role_start_dt = project_member.date_in_role_from +" 00:00:00"
             role_end_dt = project_member.date_in_role_until + " 23:59:59"
-            result [project_member.id] = project_member.hours_planned_real + self._compute_approved_leaves(cr, uid, ids, project_member.employee_id, role_start_dt, role_end_dt)
+            result [project_member.id] = project_member.hours_planned_real + \
+            self._compute_approved_leaves(cr, uid, ids, project_member.employee_id, role_start_dt, role_end_dt) +\
+            self._compute_public_holidays(cr, uid, ids, project_member.employee_id, role_start_dt, role_end_dt) 
         return result
      
     def _compute_real_planned(self, cr, uid, ids, field_name, arg, context = None):
