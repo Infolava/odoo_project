@@ -196,13 +196,13 @@ class project_member_role(osv.osv):
     def _compute_remaining_hours(self, cr, uid, ids, field_name, arg, context = None):
         result = {}
         for project_member in self.browse(cr, uid, ids, context) :
-            work_ids = self.pool.get("project.task.work").search(cr, uid, \
+            work_ids = self.pool.get("project.task.work").search(cr, SUPERUSER_ID, \
                                                                     [('task_id.project_id','=', project_member.project_id.id),\
                                                                      ('user_id', '=', project_member.employee_id.user_id.id),\
                                                                      ('date', '>=',project_member.date_in_role_from),\
                                                                      ('date', '<=',project_member.date_in_role_until)
                                                                      ])
-            working_task = self.pool.get("project.task.work").browse(cr, uid, work_ids)
+            working_task = self.pool.get("project.task.work").browse(cr, SUPERUSER_ID, work_ids)
 
             spent_hours = sum([working_task.hours for working_task in working_task])
             result [project_member.id] = project_member.hours_planned_real - spent_hours
