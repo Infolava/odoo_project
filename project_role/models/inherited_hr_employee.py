@@ -27,8 +27,11 @@
 # Checked out Version:   $LastChangedRevision$
 # HeadURL:               $HeadURL$
 # --------------------------------------------------------------------------------
-from openerp import models, fields, api, _, tools
+from openerp import models, fields, api, _
 from openerp.exceptions import ValidationError
+from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT as DTF
+from openerp.tools import DEFAULT_SERVER_DATE_FORMAT as DF
+from datetime import datetime, timedelta
 
 class hr_employee(models.Model):
     _name = "hr.employee"
@@ -59,11 +62,10 @@ class hr_employee(models.Model):
     
     @api.multi
     def _get_working_hours_month_average(self):
-        from datetime import datetime, timedelta
         self.ensure_one()
         employee_contract_id = self.contract_id    # get only the last contract_id
         if employee_contract_id and employee_contract_id.working_hours :    # If the user has a contract
-            start_date = datetime.strptime(employee_contract_id.date_start, tools.DEFAULT_SERVER_DATE_FORMAT)
+            start_date = datetime.strptime(employee_contract_id.date_start, DF)
             date_to = start_date + timedelta(days = 365)
             working_hours_month_average = int(round(employee_contract_id.working_hours.interval_hours_get(start_date, date_to)[0] / 12))
         else :    # default working hours month average (8 hours/day, 20 working_days/month)
@@ -78,6 +80,28 @@ class hr_employee(models.Model):
                                                                  ('project_id.state', 'in', ['open'])])
             employee_effort = [member.hours_planned_monthly for member in project_members]
             employee.availability = employee._get_working_hours_month_average() - sum(employee_effort)
+            
+    @api.multi
+    def _compute_approved_leaves(self, dt_from, dt_until):
+        """
+            Compute employee approved leaves for specific period
+            @ param : d
+        """
+        self.ensure_one()
+        holidays = self.env['hr.holidays'].search([('state','=','validate'),\
+                                                       ('employee_id','=',self.id), \
+                                                       ('type','=','remove'), \
+                                                       ('date_from', '>=', dt_from), \
+                                                       ('date_to', '<=', dt_until)\
+                                                       ]\
+                                                      )
+        hours = 0.0
+        for hol in holidays :
+            date_from = datetime.strptime(hol.date_from, DTF)
+            date_to = datetime.strptime(hol.date_to, DTF)
+            if self.contract_id and self.contract_id.working_hours:
+                hours += self.contract_id.working_hours.get_working_hours(date_from, date_to)[0]
+        return hours
 
     user_id = fields.Many2one('res.users', required = True)
     contract_ids = fields.One2many('hr.contract', 'employee_id', 'Contracts', required = True)

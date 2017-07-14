@@ -28,6 +28,7 @@
     'depends' : [
                  'project',
                  'hr_contract',
+                 'hr_public_holidays'
                 ],
     'demo_xml' : [],
     'summary': 'Addon to staff projects based on roles and employees contracts',
