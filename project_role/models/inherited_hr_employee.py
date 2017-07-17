@@ -61,18 +61,53 @@ class hr_employee(models.Model):
         return super(hr_employee, self).name_get()
     
     @api.multi
+    def _check_contract_working_hours(self):
+        # check if the user has a contract with specified working hours
+        self.ensure_one()
+        for contract in self.contract_ids :
+            if contract.working_hours :
+                return True
+        return False
+    
+    @api.multi
     def _get_working_hours_month_average(self):
         self.ensure_one()
-        employee_contract_id = self.contract_id    # get only the last contract_id
-        if employee_contract_id and employee_contract_id.working_hours :    # If the user has a contract
-            start_date = datetime.strptime(employee_contract_id.date_start, DF)
-            date_to = start_date + timedelta(days = 365)
-            working_hours_month_average = int(round(employee_contract_id.working_hours.interval_hours_get(start_date, date_to)[0] / 12))
-        else :    # default working hours month average (8 hours/day, 20 working_days/month)
-            working_hours_month_average = 160
+        working_hours_month_average = 0
+        if self._check_contract_working_hours() :
+            for contract in self.contract_ids :
+                date_from = datetime.strptime(contract.date_start, DF)
+                date_to = date_from + timedelta(days = 365)
+                if contract.date_end and date_to > datetime.strptime(contract.date_end, DF) :
+                    date_to = datetime.strptime(contract.date_end, DF)
+                num_month = int(round((date_to - date_from).days / 30.0))
+                working_hours_month_average += int(round(contract.working_hours.get_working_hours(\
+                                                          date_from, date_to, compute_leaves = False)[0] / num_month))
+        else :    # default working hours month average (8 hours/day, 21 working_days/month)
+            working_hours_month_average = 168
         return working_hours_month_average
 
-
+    @api.multi
+    def _get_total_working_hours(self, dt_from, dt_until = False):
+        """
+            get total working hours from dt_from to dt_until considering all employee contracts.
+            If dt_until is not specified , compute total working hours of date dt_from
+            @param dt_from: datetime, starting date
+            @param dt_from: datetime, ending date
+            @return: float, Total working hours
+        """
+        self.ensure_one()
+        hours = 0.0
+        if dt_until :
+            for contract in self.contract_ids :
+                #date_from = datetime.strptime(dt_from, DTF)
+                #date_to = datetime.strptime(dt_until, DTF)
+                #Do not compute leaves 
+                hours += contract.working_hours.get_working_hours(dt_from, dt_until, compute_leaves = False)[0]
+        else :
+            for contract in self.contract_ids :
+                hours += contract.working_hours.get_working_hours_of_date(dt_from)[0]
+        return hours
+    
     def _get_availability(self):
         for employee in self :
             # search only on open projects
@@ -80,6 +115,7 @@ class hr_employee(models.Model):
                                                                  ('project_id.state', 'in', ['open'])])
             employee_effort = [member.hours_planned_monthly for member in project_members]
             employee.availability = employee._get_working_hours_month_average() - sum(employee_effort)
+            
             
     @api.multi
     def _compute_approved_leaves(self, dt_from, dt_until):
@@ -99,8 +135,7 @@ class hr_employee(models.Model):
         for hol in holidays :
             date_from = datetime.strptime(hol.date_from, DTF)
             date_to = datetime.strptime(hol.date_to, DTF)
-            if self.contract_id and self.contract_id.working_hours:
-                hours += self.contract_id.working_hours.get_working_hours(date_from, date_to)[0]
+            hours += self._get_total_working_hours(date_from, date_to)
         return hours
 
     user_id = fields.Many2one('res.users', required = True)

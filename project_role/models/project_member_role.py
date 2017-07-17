@@ -136,7 +136,7 @@ class project_member_role(osv.osv):
         hours = 0.0
         while date_from <= date_to:
             if self.pool.get('hr.holidays.public').is_public_holiday(cr, SUPERUSER_ID,date_from):
-                hours += self.pool.get('resource.calendar').get_working_hours_of_date(cr,uid,employee.contract_id.working_hours.id, date_from)
+                hours += employee._get_total_working_hours(date_from)
             date_from = date_from + timedelta(days=1)
         return hours
             
@@ -157,25 +157,17 @@ class project_member_role(osv.osv):
             role_start_dt = datetime.strptime(project_member.date_in_role_from, DF)
             role_end_dt = datetime.strptime(project_member.date_in_role_until, DF)
             real_planned = 0
-            if project_member.employee_id.contract_id:
-                if project_member.employee_id.contract_id.working_hours.attendance_ids :
-                    date_from = role_start_dt
-                    while date_from < role_end_dt :
-                        date_to = date_from
-                        if date_from.month == role_end_dt.month and date_from.year == role_end_dt.year :
-                            date_to = role_end_dt
-                        else :
-                            date_to = date_to.replace(day = monthrange(date_from.year, date_from.month)[1])
-                        date_to = date_to + timedelta(days=1)
-                        project_role_availibility_hours = int(round(self.pool.get('resource.calendar').get_working_hours(cr, \
-                                                                                                                         uid, \
-                                                                                                                         project_member.employee_id.contract_id.working_hours.id, \
-                                                                                                                         date_from, \
-                                                                                                                         date_to, \
-                                                                                                                         compute_leaves = True)))
-                        real_planned += min(project_role_availibility_hours, project_member.hours_planned_monthly)
-                        date_from = date_to
-                        
+            date_from = role_start_dt
+            while date_from < role_end_dt :
+                date_to = date_from
+                if date_from.month == role_end_dt.month and date_from.year == role_end_dt.year :
+                    date_to = role_end_dt
+                else :
+                    date_to = date_to.replace(day = monthrange(date_from.year, date_from.month)[1])
+                date_to = date_to + timedelta(days=1)
+                project_role_availibility_hours = int(round(project_member.employee_id._get_total_working_hours(date_from,date_to)))
+                real_planned += min(project_role_availibility_hours, project_member.hours_planned_monthly)
+                date_from = date_to
             result[project_member.id] = real_planned
         return result
     
