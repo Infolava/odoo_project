@@ -27,11 +27,13 @@
 # Checked out Version:   $LastChangedRevision$
 # HeadURL:               $HeadURL$
 # --------------------------------------------------------------------------------
-from openerp import models, fields, api, _
+from openerp import SUPERUSER_ID
+from openerp import models, fields, api, _ 
 from openerp.exceptions import ValidationError
 from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT as DTF
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT as DF
 from datetime import datetime, timedelta
+import pytz
 
 class hr_employee(models.Model):
     _name = "hr.employee"
@@ -99,8 +101,6 @@ class hr_employee(models.Model):
         hours = 0.0
         if dt_until :
             for contract in self.contract_ids :
-                #date_from = datetime.strptime(dt_from, DTF)
-                #date_to = datetime.strptime(dt_until, DTF)
                 #Do not compute leaves 
                 hours += contract.working_hours.get_working_hours(dt_from, dt_until, compute_leaves = False)[0]
         else :
@@ -117,6 +117,14 @@ class hr_employee(models.Model):
             employee.availability = employee._get_working_hours_month_average() - sum(employee_effort)
             
             
+    def _setup_date_timezone(self, date):
+        for employee in self :
+            user_tz = employee.user_id.tz or pytz.utc
+            tz_info = pytz.timezone(user_tz) # equivalent to fields.datetime.context_timestamp(cr, uid, dt_from, context=context).tzinfo
+            new_date = pytz.utc.localize(datetime.strptime(date, DF)).astimezone(tz_info).replace(tzinfo=pytz.UTC)
+            new_date= datetime.strptime(datetime.strftime(new_date,DTF),DTF)
+        return new_date
+        
     @api.multi
     def _compute_approved_leaves(self, dt_from, dt_until):
         """
@@ -133,9 +141,20 @@ class hr_employee(models.Model):
                                                       )
         hours = 0.0
         for hol in holidays :
-            date_from = datetime.strptime(hol.date_from, DTF)
-            date_to = datetime.strptime(hol.date_to, DTF)
+            date_from = self._setup_date_timezone(hol.date_from)
+            date_to = self._setup_date_timezone(hol.date_to)
             hours += self._get_total_working_hours(date_from, date_to)
+        return hours
+    
+    @api.multi
+    def _compute_public_holidays(self, dt_from, dt_until, context = None):
+        date_from = self._setup_date_timezone(dt_from)
+        date_to = self._setup_date_timezone(dt_until)
+        hours = 0.0
+        while date_from <= date_to:
+            if self.pool.get('hr.holidays.public').is_public_holiday(self._cr, SUPERUSER_ID, date_from):
+                hours += self._get_total_working_hours(date_from)
+            date_from = date_from + timedelta(days=1)
         return hours
 
     user_id = fields.Many2one('res.users', required = True)

@@ -130,32 +130,19 @@ class project_member_role(osv.osv):
     _name = 'project.member'
     _description = 'Assign employee to a project'
     
-    def _compute_public_holidays(self, cr, uid, ids,employee, dt_from, dt_until, context = None):
-        date_from = datetime.strptime(dt_from, DTF)
-        date_to = datetime.strptime(dt_until, DTF)
-        hours = 0.0
-        while date_from <= date_to:
-            if self.pool.get('hr.holidays.public').is_public_holiday(cr, SUPERUSER_ID,date_from):
-                hours += employee._get_total_working_hours(date_from)
-            date_from = date_from + timedelta(days=1)
-        return hours
-            
-    
     def _compute_total_planned(self, cr, uid, ids, field_name, arg, context = None):
         result = {}
         for project_member in self.browse(cr, uid, ids, context) :
-            role_start_dt = project_member.date_in_role_from +" 00:00:00"
-            role_end_dt = project_member.date_in_role_until + " 23:59:59"
             result [project_member.id] = project_member.hours_planned_real + \
-            project_member.employee_id._compute_approved_leaves(role_start_dt, role_end_dt) +\
-            self._compute_public_holidays(cr, uid, ids, project_member.employee_id, role_start_dt, role_end_dt) 
+            project_member.employee_id._compute_approved_leaves(project_member.date_in_role_from, project_member.date_in_role_until) +\
+            project_member.employee_id._compute_public_holidays(project_member.date_in_role_from, project_member.date_in_role_until) 
         return result
      
     def _compute_real_planned(self, cr, uid, ids, field_name, arg, context = None):
         result = {}
         for project_member in self.browse(cr, uid, ids, context) :
-            role_start_dt = datetime.strptime(project_member.date_in_role_from, DF)
-            role_end_dt = datetime.strptime(project_member.date_in_role_until, DF)
+            role_start_dt = project_member.employee_id._setup_date_timezone(project_member.date_in_role_from)
+            role_end_dt = project_member.employee_id._setup_date_timezone(project_member.date_in_role_until)
             real_planned = 0
             date_from = role_start_dt
             while date_from < role_end_dt :
