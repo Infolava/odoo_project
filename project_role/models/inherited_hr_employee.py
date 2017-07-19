@@ -82,7 +82,7 @@ class hr_employee(models.Model):
                 date_to = date_from + timedelta(days = 365)
                 if contract.date_end and date_to > datetime.strptime(contract.date_end, DF) :
                     date_to = datetime.strptime(contract.date_end, DF)
-                num_month = math.ceil((date_to - date_from).days / 30)
+                num_month = math.ceil((date_to - date_from).days / 30.0)
                 working_hours_month_average += int(round(contract.working_hours.get_working_hours(\
                                                           date_from, date_to, compute_leaves = False)[0] / num_month))
         else :    # default working hours month average (8 hours/day, 21 working_days/month)
