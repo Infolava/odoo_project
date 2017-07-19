@@ -34,6 +34,7 @@ from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT as DTF
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT as DF
 from datetime import datetime, timedelta
 import pytz
+import math
 
 class hr_employee(models.Model):
     _name = "hr.employee"
@@ -81,7 +82,7 @@ class hr_employee(models.Model):
                 date_to = date_from + timedelta(days = 365)
                 if contract.date_end and date_to > datetime.strptime(contract.date_end, DF) :
                     date_to = datetime.strptime(contract.date_end, DF)
-                num_month = int(round((date_to - date_from).days / 30.0))
+                num_month = math.ceil((date_to - date_from).days / 30)
                 working_hours_month_average += int(round(contract.working_hours.get_working_hours(\
                                                           date_from, date_to, compute_leaves = False)[0] / num_month))
         else :    # default working hours month average (8 hours/day, 21 working_days/month)
@@ -119,7 +120,7 @@ class hr_employee(models.Model):
             
     def _setup_date_timezone(self, date):
         for employee in self :
-            user_tz = employee.user_id.tz or pytz.utc
+            user_tz = employee.user_id.tz or pytz.utc._tzname
             tz_info = pytz.timezone(user_tz) # equivalent to fields.datetime.context_timestamp(cr, uid, dt_from, context=context).tzinfo
             new_date = pytz.utc.localize(datetime.strptime(date, DF)).astimezone(tz_info).replace(tzinfo=pytz.UTC)
             new_date= datetime.strptime(datetime.strftime(new_date,DTF),DTF)
