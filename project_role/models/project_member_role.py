@@ -197,25 +197,41 @@ class project_member_role(osv.osv):
                 return False
         return True
     
-    def _check_date_in_role_from(self, cr, uid, ids):
+    def _check_date_in_role_vs_project(self, cr, uid, ids):
         for member in self.browse(cr, uid, ids) :
+            date_from = datetime.strptime(member.date_in_role_from, DF)
+            date_until = datetime.strptime(member.date_in_role_until , DF)
             if member.project_id.date_start:
-                if member.date_in_role_from  < member.project_id.date_start or member.date_in_role_until < member.project_id.date_start:
+                prj_date_start = datetime.strptime(member.project_id.date_start , DF)
+                if date_from < prj_date_start or date_until < prj_date_start:
                     return False
             if member.project_id.date:
-                if member.date_in_role_from  > member.project_id.date or member.date_in_role_until > member.project_id.date:
+                prj_date = datetime.strptime(member.project_id.date , DF)
+                if date_from > prj_date or date_until > prj_date:
+                    return False
+        return True
+    
+    def _check_date_in_role_vs_contract(self, cr, uid, ids):
+        for member in self.browse(cr, uid, ids) :
+            if member.employee_id.contract_ids :
+                start_date = min([datetime.strptime(contract.date_start, DF) for contract in member.employee_id.contract_ids])
+                end_date = [datetime.strptime(contract.date_end, DF) for contract in member.employee_id.contract_ids if contract.date_end]
+                if datetime.strptime(member.date_in_role_from, DF) < start_date :
+                    return False
+                if end_date and datetime.strptime(member.date_in_role_until , DF) > max(end_date) :
                     return False
         return True
     
     _constraints = [
                     (_check_employee_effort, _("Employee effort must be positive"), ['hours_planned_monthly']),
                     (_check_role_in_project, _("Role must belong to the project"), ['project_role_id', 'project_id']),
-                    (_check_date_in_role_from, _("The Date From and the Date Until should be included between the project Start Date and End Date"), ['date_in_role_from', 'date_in_role_until']),
+                    (_check_date_in_role_vs_project, _("The Date From and the Date Until should be included between the project start date and end date"), ['date_in_role_from', 'date_in_role_until']),
+                    (_check_date_in_role_vs_contract, _("The Date From and the Date Until should be included between contracts start date and end date"), ['date_in_role_from', 'date_in_role_until']),
                     ]
+    
     _sql_constraints = [
                         ('unique_employee_project_role', 'UNIQUE (project_role_id, employee_id)', _('Employee already assigned to this role!')),
                         ]
-
 
     def get_employee_role(self, cr, uid, project_id, employee_id, context = None):
         project_members_role_ids = self.search(cr, uid, [('project_id', '=', project_id), ('employee_id', '=', employee_id)], context = context)
