@@ -129,60 +129,14 @@ class project_member_role(osv.osv):
     """
     _name = 'project.member'
     _description = 'Assign employee to a project'
-    
-    def _compute_total_planned(self, cr, uid, ids, field_name, arg, context = None):
-        result = {}
-        for project_member in self.browse(cr, uid, ids, context) :
-            result [project_member.id] = project_member.hours_planned_real + \
-            project_member.employee_id._compute_approved_leaves(project_member.date_in_role_from, project_member.date_in_role_until) +\
-            project_member.employee_id._compute_public_holidays(project_member.date_in_role_from, project_member.date_in_role_until) 
-        return result
-     
-    def _compute_real_planned(self, cr, uid, ids, field_name, arg, context = None):
-        result = {}
-        for project_member in self.browse(cr, uid, ids, context) :
-            role_start_dt = project_member.employee_id._setup_date_timezone(project_member.date_in_role_from)
-            role_end_dt = project_member.employee_id._setup_date_timezone(project_member.date_in_role_until)
-            real_planned = 0
-            date_from = role_start_dt
-            while date_from < role_end_dt :
-                date_to = date_from
-                if date_from.month == role_end_dt.month and date_from.year == role_end_dt.year :
-                    date_to = role_end_dt
-                else :
-                    date_to = date_to.replace(day = monthrange(date_from.year, date_from.month)[1])
-                date_to = date_to + timedelta(days=1)
-                project_role_availibility_hours = int(round(project_member.employee_id._get_total_working_hours(date_from,date_to)))
-                real_planned += min(project_role_availibility_hours, project_member.hours_planned_monthly)
-                date_from = date_to
-            result[project_member.id] = real_planned
-        return result
-    
-    def _compute_remaining_hours(self, cr, uid, ids, field_name, arg, context = None):
-        result = {}
-        for project_member in self.browse(cr, uid, ids, context) :
-            work_ids = self.pool.get("project.task.work").search(cr, SUPERUSER_ID, \
-                                                                    [('task_id.project_id','=', project_member.project_id.id),\
-                                                                     ('user_id', '=', project_member.employee_id.user_id.id),\
-                                                                     ('date', '>=',project_member.date_in_role_from),\
-                                                                     ('date', '<=',project_member.date_in_role_until)
-                                                                     ])
-            working_task = self.pool.get("project.task.work").browse(cr, SUPERUSER_ID, work_ids)
 
-            spent_hours = sum([working_task.hours for working_task in working_task])
-            result [project_member.id] = project_member.hours_planned_real - spent_hours
-        return result
     
     _columns = {
                 'project_id' : fields.many2one('project.project', string = 'Project', readonly = True),
                 'project_role_id' : fields.many2one('project.role', string = 'Role', required = True),
                 'hours_planned_monthly' : fields.integer(string = "Monthly Average", required = True),
                 'employee_id' : fields.many2one('hr.employee', string = 'Members', required = True),
-                'date_in_role_from': fields.date(string = 'Date From', required = True),
-                'date_in_role_until': fields.date(string = 'Date To', required = True),
-                'hours_planned_total': fields.function(_compute_total_planned, type = 'integer', string = 'Planned', readonly = True),
-                'hours_planned_real': fields.function(_compute_real_planned, type = 'integer', string = 'Real Planned', readonly = True),#effective hours
-                'hours_planned_remaining': fields.function(_compute_remaining_hours, type = 'integer', string = 'Remaining Hours', readonly = True),
+                
                 }
     
     def _check_employee_effort(self, cr, uid, ids):
@@ -196,37 +150,11 @@ class project_member_role(osv.osv):
             if member.project_role_id.project_id.id != member.project_id.id :
                 return False
         return True
-    
-    def _check_date_in_role_vs_project(self, cr, uid, ids):
-        for member in self.browse(cr, uid, ids) :
-            date_from = datetime.strptime(member.date_in_role_from, DF)
-            date_until = datetime.strptime(member.date_in_role_until , DF)
-            if member.project_id.date_start:
-                prj_date_start = datetime.strptime(member.project_id.date_start , DF)
-                if date_from < prj_date_start or date_until < prj_date_start:
-                    return False
-            if member.project_id.date:
-                prj_date = datetime.strptime(member.project_id.date , DF)
-                if date_from > prj_date or date_until > prj_date:
-                    return False
-        return True
-    
-    def _check_date_in_role_vs_contract(self, cr, uid, ids):
-        for member in self.browse(cr, uid, ids) :
-            if member.employee_id.contract_ids :
-                start_date = min([datetime.strptime(contract.date_start, DF) for contract in member.employee_id.contract_ids])
-                end_date = [datetime.strptime(contract.date_end, DF) for contract in member.employee_id.contract_ids if contract.date_end]
-                if datetime.strptime(member.date_in_role_from, DF) < start_date :
-                    return False
-                if end_date and datetime.strptime(member.date_in_role_until , DF) > max(end_date) :
-                    return False
-        return True
+
     
     _constraints = [
                     (_check_employee_effort, _("Employee effort must be positive"), ['hours_planned_monthly']),
                     (_check_role_in_project, _("Role must belong to the project"), ['project_role_id', 'project_id']),
-                    (_check_date_in_role_vs_project, _("The Date From and the Date Until should be included between the project start date and end date"), ['date_in_role_from', 'date_in_role_until']),
-                    (_check_date_in_role_vs_contract, _("The Date From and the Date Until should be included between contracts start date and end date"), ['date_in_role_from', 'date_in_role_until']),
                     ]
     
     _sql_constraints = [

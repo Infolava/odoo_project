@@ -122,15 +122,22 @@ class hr_employee(models.Model):
         for employee in self :
             user_tz = employee.user_id.tz or pytz.utc._tzname
             tz_info = pytz.timezone(user_tz) # equivalent to fields.datetime.context_timestamp(cr, uid, dt_from, context=context).tzinfo
-            new_date = pytz.utc.localize(datetime.strptime(date, DF)).astimezone(tz_info).replace(tzinfo=pytz.UTC)
-            new_date= datetime.strptime(datetime.strftime(new_date,DTF),DTF)
+            try :
+                new_date = pytz.utc.localize(datetime.strptime(date, DF)).astimezone(tz_info).replace(tzinfo=pytz.UTC)
+            except ValueError :
+                new_date = pytz.utc.localize(datetime.strptime(date, DTF)).astimezone(tz_info).replace(tzinfo=pytz.UTC)
+            new_date= datetime.strptime(datetime.strftime(new_date, DTF), DTF)
         return new_date
         
+    @api.multi
+    def _compute_leaves(self, dt_from, dt_until):
+        self.ensure_one()
+        return self._compute_approved_leaves(dt_from, dt_until) + self._compute_public_holidays(dt_from, dt_until)
+    
     @api.multi
     def _compute_approved_leaves(self, dt_from, dt_until):
         """
             Compute employee approved leaves for specific period
-            @ param : d
         """
         self.ensure_one()
         holidays = self.env['hr.holidays'].search([('state','=','validate'),\
@@ -148,7 +155,7 @@ class hr_employee(models.Model):
         return hours
     
     @api.multi
-    def _compute_public_holidays(self, dt_from, dt_until, context = None):
+    def _compute_public_holidays(self, dt_from, dt_until):
         date_from = self._setup_date_timezone(dt_from)
         date_to = self._setup_date_timezone(dt_until)
         hours = 0.0
