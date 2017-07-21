@@ -102,8 +102,9 @@ class hr_employee(models.Model):
         hours = 0.0
         if dt_until :
             for contract in self.contract_ids :
-                #Do not compute leaves 
-                hours += contract.working_hours.get_working_hours(dt_from, dt_until, compute_leaves = False)[0]
+                #Do not compute leaves
+                # Change context time zone to UTC, not consider user timezone when computing working hours
+                hours += contract.with_context(tz=pytz.utc._tzname).working_hours.get_working_hours(dt_from, dt_until, compute_leaves = False)[0]
         else :
             for contract in self.contract_ids :
                 hours += contract.working_hours.get_working_hours_of_date(dt_from)[0]
@@ -112,22 +113,26 @@ class hr_employee(models.Model):
     def _get_availability(self):
         for employee in self :
             # search only on open projects
-            project_members = self.env['project.member'].search([('employee_id', '=', employee.id), \
+            project_members = self.sudo().env['project.member'].search([('employee_id', '=', employee.id), \
                                                                  ('project_id.state', 'in', ['open'])])
             employee_effort = [member.hours_planned_monthly for member in project_members]
             employee.availability = employee._get_working_hours_month_average() - sum(employee_effort)
             
-            
-    def _setup_date_timezone(self, date):
-        for employee in self :
-            user_tz = employee.user_id.tz or pytz.utc._tzname
-            tz_info = pytz.timezone(user_tz) # equivalent to fields.datetime.context_timestamp(cr, uid, dt_from, context=context).tzinfo
-            try :
-                new_date = pytz.utc.localize(datetime.strptime(date, DF)).astimezone(tz_info).replace(tzinfo=pytz.UTC)
-            except ValueError :
-                new_date = pytz.utc.localize(datetime.strptime(date, DTF)).astimezone(tz_info).replace(tzinfo=pytz.UTC)
-            new_date= datetime.strptime(datetime.strftime(new_date, DTF), DTF)
-        return new_date
+    def _date_to_employee_tz(self, date, employee_tz=pytz.utc._tzname):
+        """
+            Convert date to employee's time zone
+        """
+        tz_info = pytz.timezone(employee_tz) # equivalent to fields.datetime.context_timestamp(cr, uid, dt_from, context=context).tzinfo
+        new_date = pytz.utc.localize(datetime.strptime(date, DF)).astimezone(tz_info).replace(tzinfo=pytz.UTC)
+        return datetime.strptime(datetime.strftime(new_date, DTF), DTF)
+    
+    def _datetime_to_employee_tz(self, date, employee_tz=pytz.utc._tzname):
+        """
+            Convert datetime to employee's time zone
+        """
+        
+        tz_info = pytz.timezone(employee_tz) # equivalent to fields.datetime.context_timestamp(cr, uid, dt_from, context=context).tzinfo
+        return datetime.strptime(date, DTF).replace(tzinfo=pytz.UTC).astimezone(tz_info).replace(tzinfo=None)
         
     @api.multi
     def _compute_leaves(self, dt_from, dt_until):
@@ -138,31 +143,39 @@ class hr_employee(models.Model):
     def _compute_approved_leaves(self, dt_from, dt_until):
         """
             Compute employee approved leaves for specific period
+            @param dt_from: datetime, starting date
+            @param dt_from: datetime, ending date
+            @return: float, Total approved leaves hours
         """
         self.ensure_one()
         holidays = self.env['hr.holidays'].search([('state','=','validate'),\
                                                        ('employee_id','=',self.id), \
                                                        ('type','=','remove'), \
-                                                       ('date_from', '>=', dt_from), \
-                                                       ('date_to', '<=', dt_until)\
+                                                       ('date_to', '>=', str(dt_from)), \
                                                        ]\
                                                       )
         hours = 0.0
         for hol in holidays :
-            date_from = self._setup_date_timezone(hol.date_from)
-            date_to = self._setup_date_timezone(hol.date_to)
-            hours += self._get_total_working_hours(date_from, date_to)
+            date_from = hol.date_from if datetime.strptime(hol.date_from, DTF) >= dt_from else str(dt_from)
+            date_to = hol.date_to if datetime.strptime(hol.date_to, DTF) <= dt_until else str(dt_until)
+            date2tz_from = self._datetime_to_employee_tz(date_from, self.user_id.tz or pytz.utc._tzname)
+            date2tz_to = self._datetime_to_employee_tz(date_to, self.user_id.tz or pytz.utc._tzname)
+            hours += self._get_total_working_hours(date2tz_from, date2tz_to)
         return hours
     
     @api.multi
     def _compute_public_holidays(self, dt_from, dt_until):
-        date_from = self._setup_date_timezone(dt_from)
-        date_to = self._setup_date_timezone(dt_until)
+        """
+            compute total working hours of public holidays
+            @param dt_from: datetime, starting date
+            @param dt_from: datetime, ending date
+            @return: float
+        """
         hours = 0.0
-        while date_from <= date_to:
-            if self.pool.get('hr.holidays.public').is_public_holiday(self._cr, SUPERUSER_ID, date_from):
-                hours += self._get_total_working_hours(date_from)
-            date_from = date_from + timedelta(days=1)
+        while dt_from <= dt_until:
+            if self.pool.get('hr.holidays.public').is_public_holiday(self._cr, SUPERUSER_ID, dt_from):
+                hours += self._get_total_working_hours(dt_from)
+            dt_from = dt_from + timedelta(days=1)
         return hours
 
     user_id = fields.Many2one('res.users', required = True)

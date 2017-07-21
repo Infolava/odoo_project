@@ -42,8 +42,8 @@ class project_member(models.Model):
     @api.depends('employee_id')
     def _compute_total_and_real_planned(self):
         for project_member in self :
-            role_start_dt = project_member.employee_id._setup_date_timezone(project_member.date_in_role_from)
-            role_end_dt = project_member.employee_id._setup_date_timezone(project_member.date_in_role_until)
+            role_start_dt = datetime.strptime(project_member.date_in_role_from, DF)
+            role_end_dt = datetime.strptime(project_member.date_in_role_until, DF)
             real_planned = 0
             total_planned = 0
             date_from = role_start_dt
@@ -55,7 +55,7 @@ class project_member(models.Model):
                     date_to = date_to.replace(day = monthrange(date_from.year, date_from.month)[1])
                 date_to = date_to + timedelta(days=1)
                 project_role_availibility_hours = int(round(project_member.employee_id._get_total_working_hours(date_from, date_to)))
-                planned_holidays = project_member.employee_id._compute_leaves(str(date_from), str(date_to))
+                planned_holidays = project_member.employee_id._compute_leaves(date_from, date_to)
                 planned = min((project_role_availibility_hours - planned_holidays), project_member.hours_planned_monthly)
                 real_planned += planned
                 total_planned += planned + planned_holidays
