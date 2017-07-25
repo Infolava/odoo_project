@@ -132,5 +132,9 @@
             <field eval="[(4,ref('base.group_hr_manager'))]" name="groups_id"/>
         </record>
 		
+	<!-- Add group Hr/Officer to project Manager -->
+		<record model="res.groups" id="project.group_project_manager">
+			<field name="implied_ids" eval="[(4,ref('base.group_hr_user'))]"/>
+		</record>
 	</data>
 </openerp>	
