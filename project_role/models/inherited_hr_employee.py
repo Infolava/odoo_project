@@ -110,28 +110,20 @@ class hr_employee(models.Model):
                 hours += contract.working_hours.get_working_hours_of_date(dt_from)[0]
         return hours
     
-    def _get_availability(self):
+    def _compute_monthly_availability_average(self):
         for employee in self :
             # search only on open projects
             project_members = self.sudo().env['project.member'].search([('employee_id', '=', employee.id), \
                                                                  ('project_id.state', 'in', ['open'])])
-            employee_effort = [member.hours_planned_monthly for member in project_members]
-            employee.availability = employee._get_working_hours_month_average() - sum(employee_effort)
-            
-    def _date_to_employee_tz(self, date, employee_tz=pytz.utc._tzname):
-        """
-            Convert date to employee's time zone
-        """
-        tz_info = pytz.timezone(employee_tz) # equivalent to fields.datetime.context_timestamp(cr, uid, dt_from, context=context).tzinfo
-        new_date = pytz.utc.localize(datetime.strptime(date, DF)).astimezone(tz_info).replace(tzinfo=pytz.UTC)
-        return datetime.strptime(datetime.strftime(new_date, DTF), DTF)
+            total_hours_planned_monthly = [member.hours_planned_monthly for member in project_members]
+            employee.availability = employee._get_working_hours_month_average() - sum(total_hours_planned_monthly)
     
-    def _datetime_to_employee_tz(self, date, employee_tz=pytz.utc._tzname):
+    def _datetime_to_tz(self, date, tz=pytz.utc._tzname):
         """
-            Convert datetime to employee's time zone
+            Convert datetime to specified time zone
         """
         
-        tz_info = pytz.timezone(employee_tz) # equivalent to fields.datetime.context_timestamp(cr, uid, dt_from, context=context).tzinfo
+        tz_info = pytz.timezone(tz) # equivalent to fields.datetime.context_timestamp(cr, uid, dt_from, context=context).tzinfo
         return datetime.strptime(date, DTF).replace(tzinfo=pytz.UTC).astimezone(tz_info).replace(tzinfo=None)
         
     @api.multi
@@ -158,8 +150,9 @@ class hr_employee(models.Model):
         for hol in holidays :
             date_from = hol.date_from if datetime.strptime(hol.date_from, DTF) >= dt_from else str(dt_from)
             date_to = hol.date_to if datetime.strptime(hol.date_to, DTF) <= dt_until else str(dt_until)
-            date2tz_from = self._datetime_to_employee_tz(date_from, self.user_id.tz or pytz.utc._tzname)
-            date2tz_to = self._datetime_to_employee_tz(date_to, self.user_id.tz or pytz.utc._tzname)
+            #Use holiday create_uid timezone instead of employee timezone
+            date2tz_from = self._datetime_to_tz(date_from, hol.create_uid.tz or pytz.utc._tzname)
+            date2tz_to = self._datetime_to_tz(date_to, hol.create_uid.tz or pytz.utc._tzname)
             hours += self._get_total_working_hours(date2tz_from, date2tz_to)
         return hours
     
@@ -180,7 +173,7 @@ class hr_employee(models.Model):
 
     user_id = fields.Many2one('res.users', required = True)
     contract_ids = fields.One2many('hr.contract', 'employee_id', 'Contracts', required = True)
-    availability = fields.Integer(compute = _get_availability, string = 'Availability (Hours/Month)', readonly = True)
+    availability = fields.Integer(compute = _compute_monthly_availability_average, string = 'Monthly Availability Average (Hours/Month)', readonly = True)
     assigned_role_ids = fields.One2many('project.member', 'employee_id', string = 'Assigned Roles')
     
 class res_users(models.Model):
