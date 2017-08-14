@@ -156,20 +156,22 @@ class hr_employee(models.Model):
             hours += self._get_total_working_hours(date2tz_from, date2tz_to)
         return hours
     
-    @api.multi
-    def _compute_public_holidays(self, dt_from, dt_until):
-        """
-            compute total working hours of public holidays
-            @param dt_from: datetime, starting date
-            @param dt_from: datetime, ending date
-            @return: float
-        """
-        hours = 0.0
-        while dt_from <= dt_until:
-            if self.pool.get('hr.holidays.public').is_public_holiday(self._cr, SUPERUSER_ID, dt_from):
-                hours += self._get_total_working_hours(dt_from)
-            dt_from = dt_from + timedelta(days=1)
-        return hours
+    #===========================================================================
+    # @api.multi
+    # def _compute_public_holidays(self, dt_from, dt_until):
+    #     """
+    #         compute total working hours of public holidays
+    #         @param dt_from: datetime, starting date
+    #         @param dt_from: datetime, ending date
+    #         @return: float
+    #     """
+    #     hours = 0.0
+    #     while dt_from <= dt_until:
+    #         if self.pool.get('hr.holidays.public').is_public_holiday(self._cr, SUPERUSER_ID, dt_from):
+    #             hours += self._get_total_working_hours(dt_from)
+    #         dt_from = dt_from + timedelta(days=1)
+    #     return hours
+    #===========================================================================
 
     user_id = fields.Many2one('res.users', required = True)
     contract_ids = fields.One2many('hr.contract', 'employee_id', 'Contracts', required = True)

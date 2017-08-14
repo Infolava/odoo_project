@@ -27,7 +27,7 @@
     'category' : 'Project Management',
     'depends' : [
                  'project',
-                 'hr_contract',
+                 'hr_contract_work_place',
                  'hr_public_holidays'
                 ],
     'demo_xml' : [],
