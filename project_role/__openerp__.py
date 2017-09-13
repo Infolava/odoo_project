@@ -21,14 +21,15 @@
 # --------------------------------------------------------------------------------
 {
     'name' : 'Project Roles',
-    'version' : '2.0.3',
+    'version' : '2.1.0',
     'author' : 'Infolava',
     'website': 'http://www.infolava.ch',
     'category' : 'Project Management',
     'depends' : [
                  'project',
                  'hr_contract_work_place',
-                 'hr_public_holidays'
+                 'hr_public_holidays',
+                 'hr_holidays',
                 ],
     'demo_xml' : [],
     'summary': 'Addon to staff projects based on roles and employees contracts',
