@@ -38,7 +38,7 @@ from calendar import monthrange
 class project_member(models.Model):
     _name = "project.member"
     _inherit = 'project.member'
-     
+    
     @api.depends('employee_id')
     def _compute_total_and_real_planned(self):
         for project_member in self :
@@ -80,6 +80,14 @@ class project_member(models.Model):
     hours_planned_total = fields.Integer(compute = _compute_total_and_real_planned, string = 'Planned', readonly = True)
     hours_planned_real = fields.Integer(compute = _compute_total_and_real_planned, string = 'Real Planned', readonly = True)#effective hours
     hours_planned_remaining= fields.Integer(compute = _compute_remaining_hours, string = 'Remaining Hours', readonly = True)
+    
+    @api.one
+    @api.constrains('date_in_role_from', 'date_in_role_until')
+    def _check_dateFrom_vs_dateTo(self):
+        for member in self :
+            if member.date_in_role_from > member.date_in_role_until:
+                raise ValidationError(_("The Date From should be later than the Date To"))
+        return True
     
     @api.one
     @api.constrains('project_id', 'date_in_role_from', 'date_in_role_until')
