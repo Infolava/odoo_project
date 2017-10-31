@@ -102,7 +102,7 @@ class project_member(models.Model):
             if member.project_id.date:
                 prj_date = datetime.strptime(member.project_id.date , DF)
                 if date_from > prj_date or date_until > prj_date:
-                    raise ValidationError(_("The End Date should be anterior than the project start date"))
+                    raise ValidationError(_("The End Date should be anterior than the project end date"))
         return True
     
     @api.one
