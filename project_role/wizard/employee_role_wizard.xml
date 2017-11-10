@@ -8,7 +8,7 @@
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 -->
-<openerp><data noupdate="1">
+<openerp><data>
 	<!-- Assign role to a project wizard -->
 			<record model="ir.ui.view" id="view_roles_project_wizard_form">
 			<field name="name">Select Roles</field>

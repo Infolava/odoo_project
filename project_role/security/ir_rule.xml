@@ -9,7 +9,7 @@
 
 -->
 <openerp>
-	<data noupdate="1">
+	<data>
 		<!-- Project Manager CRUD task of managed project -->
 		<record model="ir.rule" id="project_task_prj_manager_rule">
 			<field name="name">Task Rule project_task_prj_manager_rule</field> 

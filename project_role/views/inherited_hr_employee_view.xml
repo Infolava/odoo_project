@@ -9,7 +9,7 @@
 
 -->
 <openerp>
-	<data noupdate="1">
+	<data>
 		
 		<!-- Extend the hr.employee tree view -->
 		<record id="extended_view_employee_form" model="ir.ui.view">

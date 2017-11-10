@@ -9,7 +9,7 @@
 
 -->
 <openerp>
-	<data noupdate="1">
+	<data>
 	
 		<!-- Access Right Definition for project.project.roles model -->
 		<record model="ir.model.access" id="object_project_project_role_full_access">

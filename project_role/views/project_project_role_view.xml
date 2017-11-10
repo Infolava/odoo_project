@@ -9,7 +9,7 @@
 
 -->
 <openerp>
-	<data noupdate="1">
+	<data>
 		
 		<!-- Define menu actions -->
 		<record id="action_project_project_roles_list_tree_view" model="ir.actions.act_window">

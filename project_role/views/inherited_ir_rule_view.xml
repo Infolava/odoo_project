@@ -18,7 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <openerp>
-	<data noupdate="1">
+	<data>
 		<!-- View form to extend the project view adding new tab Roles and updating the Team tab -->
 		<record model="ir.ui.view" id="inherited_ir_rule_form_view" >
 			<field name="name">Inherited ir_rule form view</field>
