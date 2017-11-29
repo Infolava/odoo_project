@@ -257,7 +257,7 @@ class project_member_role(osv.osv):
 
     def write(self, cr, uid, ids, values, context = None):
         project_members = self.browse(cr, uid, ids, context)
-        project_members_read = self.read(cr, uid, ids, context)
+        project_members_read = self.read(cr, uid, ids, context = context)
         if values.has_key('employee_id') or values.has_key('project_role_id') :
             self.ensure_members_own_no_artifacts(cr, uid, project_members_read, context)
         employee_ids = [member.employee_id.id for member in project_members]
