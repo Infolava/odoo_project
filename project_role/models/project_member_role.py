@@ -156,10 +156,6 @@ class project_member_role(osv.osv):
                     (_check_employee_effort, _("Employee effort must be positive"), ['hours_planned_monthly']),
                     (_check_role_in_project, _("Role must belong to the project"), ['project_role_id', 'project_id']),
                     ]
-    
-    _sql_constraints = [
-                        ('unique_employee_project_role', 'UNIQUE (project_role_id, employee_id)', _('Employee already assigned to this role!')),
-                        ]
 
     def get_employee_role(self, cr, uid, project_id, employee_id, context = None):
         project_members_role_ids = self.search(cr, uid, [('project_id', '=', project_id), ('employee_id', '=', employee_id)], context = context)
