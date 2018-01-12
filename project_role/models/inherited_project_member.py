@@ -27,12 +27,9 @@
 # Checked out Version:   $LastChangedRevision$
 # HeadURL:               $HeadURL$
 # --------------------------------------------------------------------------------
-from openerp import SUPERUSER_ID
-from openerp import models, fields, api, _ 
+from openerp import models, fields, api, _, SUPERUSER_ID
 from openerp.exceptions import ValidationError
-from openerp.tools import DEFAULT_SERVER_DATETIME_FORMAT as DTF
-from openerp.tools import DEFAULT_SERVER_DATE_FORMAT as DF
-from datetime import datetime, timedelta
+from datetime import timedelta
 from calendar import monthrange
 
 class project_member(models.Model):
@@ -42,8 +39,8 @@ class project_member(models.Model):
     @api.depends('employee_id')
     def _compute_total_and_real_planned(self):
         for project_member in self :
-            role_start_dt = datetime.strptime(project_member.date_in_role_from, DF)
-            role_end_dt = datetime.strptime(project_member.date_in_role_until, DF)
+            role_start_dt = fields.Date.from_string(project_member.date_in_role_from)
+            role_end_dt = fields.Date.from_string(project_member.date_in_role_until)
             real_planned = 0
             total_planned = 0
             date_from = role_start_dt
@@ -81,7 +78,6 @@ class project_member(models.Model):
     hours_planned_real = fields.Integer(compute = _compute_total_and_real_planned, string = 'Real Planned', readonly = True)#effective hours
     hours_planned_remaining= fields.Integer(compute = _compute_remaining_hours, string = 'Remaining Hours', readonly = True)
     
-    @api.one
     @api.constrains('date_in_role_from', 'date_in_role_until')
     def _check_dateFrom_vs_dateTo(self):
         for member in self :
@@ -89,34 +85,50 @@ class project_member(models.Model):
                 raise ValidationError(_("The Date From should be later than the Date To"))
         return True
     
-    @api.one
     @api.constrains('project_id', 'date_in_role_from', 'date_in_role_until')
     def _check_date_in_role_vs_project(self):
         for member in self :
-            date_from = datetime.strptime(member.date_in_role_from, DF)
-            date_until = datetime.strptime(member.date_in_role_until, DF)
+            date_from = fields.Date.from_string(member.date_in_role_from)
+            date_until = fields.Date.from_string(member.date_in_role_until)
             if member.project_id.date_start:
-                prj_date_start = datetime.strptime(member.project_id.date_start, DF)
+                prj_date_start = fields.Date.from_string(member.project_id.date_start)
                 if date_from < prj_date_start or date_until < prj_date_start:
                     raise ValidationError(_("The Date From should be later than the project start date"))
             if member.project_id.date:
-                prj_date = datetime.strptime(member.project_id.date , DF)
+                prj_date = fields.Date.from_string(member.project_id.date)
                 if date_from > prj_date or date_until > prj_date:
                     raise ValidationError(_("The End Date should be anterior than the project end date"))
         return True
     
-    @api.one
     @api.constrains('employee_id', 'date_in_role_from', 'date_in_role_until')
     def _check_date_in_role_vs_contract(self):
         for member in self :
             if member.employee_id.contract_ids :
-                start_date = min([datetime.strptime(contract.date_start, DF) for contract in member.employee_id.contract_ids])
-                end_date = [datetime.strptime(contract.date_end, DF) for contract in member.employee_id.contract_ids if contract.date_end]
-                if datetime.strptime(member.date_in_role_from, DF) < start_date :
+                start_date = min([fields.Date.from_string(contract.date_start) for contract in member.employee_id.contract_ids])
+                end_date = [fields.Date.from_string(contract.date_end) for contract in member.employee_id.contract_ids if contract.date_end]
+                if fields.Date.from_string(member.date_in_role_from) < start_date :
                     raise ValidationError(_("The Date From and the Date Until should be included between contracts start date and end date"))
-                if end_date and datetime.strptime(member.date_in_role_until , DF) > max(end_date) :
+                if end_date and fields.Date.from_string(member.date_in_role_until) > max(end_date) :
                     raise ValidationError(_("The Date From and the Date Until should be included between contracts start date and end date"))
         return True
     
+    @api.constrains('employee_id', 'project_role_id', 'date_in_role_from', 'date_in_role_until')
+    def _check_duplicated_role(self):
+        for record in self :
+            dt_from = fields.Date.from_string(record.date_in_role_from)
+            dt_until = fields.Date.from_string(record.date_in_role_until)
+            same_role = self.search([('employee_id', '=', record.employee_id.id), \
+                                     ('project_role_id', '=', record.project_role_id.id), \
+                                     '!', '|', '&',
+                                     ('date_in_role_from', '>=', dt_until), \
+                                     ('date_in_role_until', '>=', dt_until), \
+                                     '&',
+                                     ('date_in_role_from', '<=', dt_from), \
+                                     ('date_in_role_until', '<=', dt_from), \
+                                     ])# - record
+            if same_role != record:
+                raise ValidationError("%s already assigned to role %s in the same period %s -> %s." \
+                                      %(record.employee_id.name_related, record.project_role_id.role_name, record.date_in_role_from, record.date_in_role_until)
+                                      )
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4
 #eof $Id$
