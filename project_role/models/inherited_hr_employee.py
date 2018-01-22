@@ -104,10 +104,12 @@ class hr_employee(models.Model):
             for contract in self.contract_ids :
                 #Do not compute leaves
                 # Change context time zone to UTC, not consider user timezone when computing working hours
-                hours += contract.with_context(tz=pytz.utc._tzname).working_hours.get_working_hours(dt_from, dt_until, compute_leaves = False)[0]
+                if contract.with_context(tz=pytz.utc._tzname).working_hours :
+                    hours += contract.with_context(tz=pytz.utc._tzname).working_hours.get_working_hours(dt_from, dt_until, compute_leaves = False)[0]
         else :
             for contract in self.contract_ids :
-                hours += contract.working_hours.get_working_hours_of_date(dt_from)[0]
+                if contract.working_hours :
+                    hours += contract.working_hours.get_working_hours_of_date(dt_from)[0]
         return hours
     
     def _compute_monthly_availability_average(self):
