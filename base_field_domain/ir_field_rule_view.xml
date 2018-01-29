@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright:           ©  2018 Infolava GmbH  All rights reserved.
+ ================================================================================
+    This file is part of TransALM
+
+    TransALM is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<openerp>
+	<data>
+		<!-- Rules -->
+		<record id="view_field_rule_form" model="ir.ui.view">
+			<field name="model">ir.field.rule</field>
+			<field name="arch" type="xml">
+				<form string="Record Field rules">
+					<sheet>
+						<group>
+							<group string="General">
+								<field name="name" />
+								<field name="model_id" />
+								<field name="field_id" domain="[('model_id','=',model_id)]" />
+								<field name="active" />
+							</group>
+						</group>
+						<separator string="Rule Definition (Domain Filter)" />
+						<field name="domain_force" colspan="2" nolabel="1" />
+						<group string="Groups ">
+							<field name="group_ids" nolabel="1" colspan="4" required="1"/>
+						</group>
+					</sheet>
+				</form>
+			</field>
+		</record>
+		
+		<record id="view_field_rule_tree" model="ir.ui.view">
+			<field name="model">ir.field.rule</field>
+			<field name="arch" type="xml">
+				<tree string="Field Record rules">
+					<field name="name" />
+					<field name="model_id" />
+					<field name="field_id" />
+					<field name="active" />
+					<field name="domain_force" />
+				</tree>
+			</field>
+		</record>
+
+		<record id="action_field_rule" model="ir.actions.act_window">
+			<field name="name">Field Record Rules</field>
+			<field name="res_model">ir.field.rule</field>
+			<field name="view_type">form</field>
+		</record>
+		<menuitem action="action_field_rule" id="menu_field_rule"
+			parent="base.menu_security" />
+
+		<record model="ir.model.access" id="ir_field_rule_access">
+			<field name="perm_create">1</field>
+			<field name="perm_read">1</field>
+			<field name="perm_write">1</field>
+			<field name="perm_unlink"></field>
+			<field name="name">ir.field.rule [c1_r1_u1_d0]</field>
+			<field name="model_id" ref="model_ir_field_rule" />
+			<field name="group_id" ref="base.group_user" />
+		</record>
+	</data>
+</openerp>
