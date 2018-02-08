@@ -39,8 +39,9 @@ class project_member(models.Model):
     @api.depends('employee_id')
     def _compute_total_and_real_planned(self):
         for project_member in self :
-            role_start_dt = fields.Date.from_string(project_member.date_in_role_from)
-            role_end_dt = fields.Date.from_string(project_member.date_in_role_until)
+            # Convert to datetime type to be used by compute working hours
+            role_start_dt = fields.Datetime.from_string(project_member.date_in_role_from)
+            role_end_dt = fields.Datetime.from_string(project_member.date_in_role_until)
             real_planned = 0
             total_planned = 0
             date_from = role_start_dt
