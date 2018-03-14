@@ -46,6 +46,12 @@
 						</form>
 					</page>
 				</xpath>
+				<xpath expr="//field[@name='date_start']" position="attributes">
+                    <attribute name="required">True</attribute>
+                </xpath>
+                <xpath expr="//field[@name='date']" position="attributes">
+                    <attribute name="required">True</attribute>
+                </xpath>
 			</field>
 		</record>
 	</data>
