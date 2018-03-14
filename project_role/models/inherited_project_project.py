@@ -41,6 +41,8 @@ class project(osv.osv):
                 'project_role_ids' : fields.many2many('project.project.roles', 'project_role', 'project_id', 'role_id', string ='Software Project Role'),
                 'assigned_role_id' : fields.one2many('project.role', 'project_id', string ='Assigned Role', ondelete="cascade"),
                 'employee_role_id' : fields.one2many('project.member', 'project_id', string ='Project Members', ondelete="cascade"),
+                'date_start': fields.date(required = True),
+                'date': fields.date(required = True),
                 }
     
     def _get_visibility_selection(self, cr, uid, context=None):
