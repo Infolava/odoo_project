@@ -41,9 +41,22 @@ class project(osv.osv):
                 'project_role_ids' : fields.many2many('project.project.roles', 'project_role', 'project_id', 'role_id', string ='Software Project Role'),
                 'assigned_role_id' : fields.one2many('project.role', 'project_id', string ='Assigned Role', ondelete="cascade"),
                 'employee_role_id' : fields.one2many('project.member', 'project_id', string ='Project Members', ondelete="cascade"),
-                'date_start': fields.date(required = True),
-                'date': fields.date(required = True),
+                'date_start': fields.date(string = 'Start Date', required = True, default= fields.datetime.now()),
+                'date': fields.date(string='Expiration Date', required = True),
                 }
+    
+    
+    def update_assigned_role_end_date(self, cr, uid, date, context = None):
+        if self.assigned_role_id :
+            for role in self.assigned_role_id:
+                if role.date_in_role_until == self.date :
+                    role.write({'date_in_role_until': date})
+                
+    def on_change_end_date(self, cr, uid, ids, date, context = {}):
+        """
+        @summary: When the user change the end date of the project, change the end_date of roles
+        """
+        return {'value':{'assigned_role_id': self.update_assigned_role_end_date(cr, uid, date)}}
     
     def _get_visibility_selection(self, cr, uid, context=None):
         """ Override the _get_visibility_selection and add members visibility option. """
