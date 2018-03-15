@@ -19,15 +19,8 @@
 			<field name="arch" type="xml">
 				<xpath expr="/form/sheet/notebook/page[@name='team']" position="replace">
 					<page string="Team">
-						<field name="employee_role_id" string="Project Role">
-							<tree string="Project roles" editable="buttom">
-								<field name="project_id" invisible="1"/>
-								<field name="employee_id" context="{'current_model':'project.project'}" options="{'create': false, 'create_edit': false}"/>
-								<field name="project_role_id" domain="[('project_id', '=', parent.id)]" options="{'create': false, 'create_edit': false}"/>
-                                <field name="date_in_role_from"/>
-                                <field name="date_in_role_until"/>
-								<field name="hours_planned_monthly"/> 
-							</tree>
+						<field name="employee_role_id" string="Project Role" context="{'tree_view_ref' : 'project_role.view_project_roles_tab_tree', 'project_id' : active_id}">
+							
 						</field>
 					</page>
 				</xpath>

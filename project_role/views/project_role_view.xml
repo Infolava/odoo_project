@@ -53,5 +53,22 @@
 				</tree>
 			</field>
 		</record>
+		
+		<record model="ir.ui.view" id="view_project_roles_tab_tree">
+			<field name="name">Project Members</field>
+			<field name="model">project.member</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Project Member" editable="buttom">
+					<field name="project_id" invisible="1"/>
+					<field name="employee_id" context="{'current_model':'project.project'}" options="{'create': false, 'create_edit': false}"/>
+					<field name="project_role_id" domain="[('project_id', '=', parent.id)]" options="{'create': false, 'create_edit': false}"/>
+					<field name="date_in_role_from"/>
+					<field name="date_in_role_until"/>
+					<field name="hours_planned_monthly"/> 
+				</tree>
+			</field>
+		</record>
+		
 	</data>
 </openerp>

@@ -72,9 +72,14 @@ class project_member(models.Model):
 
             spent_hours = sum([working_task.hours for working_task in working_tasks])
             project_member.hours_planned_remaining = project_member.hours_planned_real - spent_hours
-    
-    date_in_role_from = fields.Date(string = 'Date From', required = True)
-    date_in_role_until = fields.Date(string = 'Date To', required = True)
+            
+    @api.model
+    def _get_date_end(self):
+        if self._context.get('project_id') :
+            return self.env['project.project'].browse(self._context.get('project_id')).date
+        
+    date_in_role_from = fields.Date(string = 'Date From', required = True, default = fields.Date.today())
+    date_in_role_until = fields.Date(string = 'Date To', required = True, default = _get_date_end)
     hours_planned_total = fields.Integer(compute = _compute_total_and_real_planned, string = 'Planned', readonly = True)
     hours_planned_real = fields.Integer(compute = _compute_total_and_real_planned, string = 'Real Planned', readonly = True)#effective hours
     hours_planned_remaining= fields.Integer(compute = _compute_remaining_hours, string = 'Remaining Hours', readonly = True)
