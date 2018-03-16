@@ -29,6 +29,7 @@
 # --------------------------------------------------------------------------------
 from openerp.osv import osv, fields
 from openerp.tools.translate import _
+from datetime import datetime
 
 class project(osv.osv):
     """
@@ -79,12 +80,7 @@ class project(osv.osv):
     
     _defaults = {
                  'privacy_visibility': 'members',
-                 }
-    
-#     def create(self, cr, uid, values, context = None):
-#         prj_id = super(project, self).create(cr, uid, values, context)
-#         self._check_members_role(cr, uid, [prj_id])
-#         return prj_id 
+                 } 
     
     def _get_previous_roles(self, cr, uid, project_id, context):
         """
@@ -102,7 +98,25 @@ class project(osv.osv):
             user_ids =[self.pool.get('hr.employee').browse(cr, uid, [employee_id], context)[0].user_id.id for employee_id in project_employees]
             return self.write(cr, uid, [project_id], {'members':[[6, False, list(set(user_ids))]]})
         
+        
+    def create(self, cr, uid, values, context = None):
+        if values.has_key('date') and values['date'] is not False:
+            start_dt = datetime.strptime(values['date_start'],"%Y-%m-%d")
+            end_dt = datetime.strptime(values['date'],"%Y-%m-%d")
+            if start_dt > end_dt:
+                raise osv.except_osv(_('Error!'), _("project start-date must be lower than project end-date"))
+        return super(project, self).create(cr, uid, values, context=context)
+             
     def write(self, cr, uid, ids, values, context = None):
+        if values.has_key('date') and values['date'] is not False:
+            if self.browse(cr,uid,ids,context)[0].employee_role_id:
+                for employee_role in self.browse(cr,uid,ids,context).employee_role_id :
+                    new_end_date = datetime.strptime(values['date'],"%Y-%m-%d")
+                    role_end_date = datetime.strptime(employee_role.date_in_role_until,"%Y-%m-%d")
+                    current_date = datetime.strptime(self.browse(cr,uid,ids,context)[0].date,"%Y-%m-%d")
+                    if current_date > new_end_date :
+                        if role_end_date > new_end_date :
+                            employee_role.write({'date_in_role_until': values['date']})
         if values.has_key('project_role_ids') :
             for project_id in ids :
                 all_previous_roles_ids = self._get_previous_roles(cr, uid, project_id, context)
