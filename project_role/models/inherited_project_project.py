@@ -108,6 +108,8 @@ class project(osv.osv):
         return super(project, self).create(cr, uid, values, context=context)
              
     def write(self, cr, uid, ids, values, context = None):
+        if values.has_key('date_start') and values['date_start'] is not False:
+            raise osv.except_osv(_('Operation denied!'), _("You cannot edit any more the start date of the current project"))
         if values.has_key('date') and values['date'] is not False:
             if self.browse(cr,uid,ids,context)[0].employee_role_id:
                 for employee_role in self.browse(cr,uid,ids,context).employee_role_id :
