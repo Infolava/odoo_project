@@ -27,150 +27,132 @@
 # Checked out Version:   $LastChangedRevision$
 # HeadURL:               $HeadURL$
 # --------------------------------------------------------------------------------
-from openerp.osv import osv, fields
-from openerp.tools.translate import _
-from datetime import datetime
 
-class project(osv.osv):
+from openerp import models, fields, api, _, SUPERUSER_ID
+from openerp.exceptions import ValidationError, except_orm
+
+class project_project(models.Model):
     """
         Extend the Project Model : Assign a role to a project
     """
     _name = 'project.project'
     _inherit = 'project.project'
+
+    project_role_ids = fields.Many2many('project.project.roles', 'project_role', 'project_id', 'role_id', string ='Software Project Role')
+    assigned_role_id = fields.One2many('project.role', 'project_id', string ='Assigned Role', ondelete="cascade")
+    employee_role_id = fields.One2many('project.member', 'project_id', string ='Project Members', ondelete="cascade")
+    privacy_visibility = fields.Selection(default = 'members')
     
-    _columns = {
-                'project_role_ids' : fields.many2many('project.project.roles', 'project_role', 'project_id', 'role_id', string ='Software Project Role'),
-                'assigned_role_id' : fields.one2many('project.role', 'project_id', string ='Assigned Role', ondelete="cascade"),
-                'employee_role_id' : fields.one2many('project.member', 'project_id', string ='Project Members', ondelete="cascade"),
-                }
-    
-    def _get_visibility_selection(self, cr, uid, context=None):
+    @api.model
+    def _get_visibility_selection(self):
         """ Override the _get_visibility_selection and add members visibility option. """
-        selection = super(project, self)._get_visibility_selection(cr, uid, context=context)
+        selection = super(project_project, self)._get_visibility_selection()
         idx = [item[0] for item in selection].index('public')
         selection.insert((idx + 1), ('members', 'Project Members'))
         return selection
     
-    def _check_employee_effort_availability(self, cr, uid, ids):
-        for project in self.browse(cr, uid, ids) :
+    @api.constrains('employee_role_id')
+    def _check_employee_effort_availability(self):
+        for project in self :
             for employee_role in project.employee_role_id :
                 if employee_role.employee_id.availability < 0 :
-                    return False
-        return True
+                    raise ValidationError(_("Employee effort exceed his availability"))
 
+    @api.constrains('assigned_role_id')
     def _check_selected_effort(self, cr, uid, ids):
-        for project in self.browse(cr, uid, ids) :
+        for project in self :
             for role in project.assigned_role_id :
                 if role.selected_effort > role.hours_planned_monthly :
-                    return False
-        return True
+                    raise ValidationError(_("Selected effort exceed role's effort quotation"))
 
-    def _check_members_role(self, cr, uid, ids):
-        for project in self.browse(cr, uid, ids) :
-            for member in project.members :
-                employee_ids = [employee.id for employee in member.employee_ids]
-                if self.pool.get('project.member').search(cr, uid, [('employee_id', 'in', employee_ids), ('project_id', '=', project.id)]) == [] :
-                    raise osv.except_osv(_('Operation Denied'), _("A user can not be a project member unless he is assigned to one role"))
-        return True
-    
-    _constraints = [
-                    (_check_employee_effort_availability, _("Employee effort exceed his availability"), ['employee_role_id']),
-                    (_check_selected_effort, _("Selected effort exceed role's effort quotation"), ['employee_role_id']),
-                    ]
-    
-    _defaults = {
-                 'privacy_visibility': 'members',
-                 } 
-    
-    def _get_previous_roles(self, cr, uid, project_id, context):
+#     @api.constrains('members')
+#     def _check_members_role(self, cr, uid, ids):
+#         for project in self.browse(cr, uid, ids) :
+#             for member in project.members :
+#                 employee_ids = [employee.id for employee in member.employee_ids]
+#                 if self.env['project.member'].search([('employee_id', 'in', employee_ids), ('project_id', '=', project.id)]) == [] :
+#                     raise ValidationError(_("A user can not be a project member unless he is assigned to one role"))
+
+    @api.multi
+    def _get_previous_roles(self):
         """
             Return a list of assigned role ids for the project_id
         """
-        project = self.browse(cr, uid, project_id, context)
-        return [projet_role.id for projet_role in project.project_role_ids]
-     
-    def _update_project_users(self, cr, uid, project_id, context = None):
-        project = self.browse(cr, uid, [project_id], context)[0]
-        project_employees = [project_member.employee_id.id for project_member in project.employee_role_id]
+        self.ensure_one()
+        return [projet_role.id for projet_role in self.project_role_ids]
+    
+    @api.multi
+    def _update_project_users(self):
+        self.ensure_one()
+        project_employees = [project_member.employee_id.id for project_member in self.employee_role_id]
         if project_employees == [] :
-            return self.write(cr, uid, [project_id], {'members':[[6, False, []]]})
+            return self.write({'members':[[6, False, []]]})
         else :
-            user_ids =[self.pool.get('hr.employee').browse(cr, uid, [employee_id], context)[0].user_id.id for employee_id in project_employees]
-            return self.write(cr, uid, [project_id], {'members':[[6, False, list(set(user_ids))]]})
+            user_ids =[self.env['hr.employee'].browse([employee_id])[0].user_id.id for employee_id in project_employees]
+            return self.write({'members':[[6, False, list(set(user_ids))]]})
         
-        
-    def create(self, cr, uid, values, context = None):
-        if values.has_key('date') and values['date'] is not False:
-            start_dt = datetime.strptime(values['date_start'],"%Y-%m-%d")
-            end_dt = datetime.strptime(values['date'],"%Y-%m-%d")
-            if start_dt > end_dt:
-                raise osv.except_osv(_('Error!'), _("project start-date must be lower than project end-date"))
-        return super(project, self).create(cr, uid, values, context=context)
+    @api.model
+    def create(self, values):
+        if values.get('date') and values.get('date_start') :
+            if fields.Datetime.from_string(values['date_start']) > fields.Datetime.from_string(values['date']):
+                raise ValidationError( _("project start-date must be lower than project end-date"))
+        return super(project_project, self).create(values)
              
-    def write(self, cr, uid, ids, values, context = None):
-        if values.has_key('date_start') and values['date_start'] is not False:
-            raise osv.except_osv(_('Operation denied!'), _("You cannot edit any more the start date of the current project"))
-        if values.has_key('date') and values['date'] is not False:
-            if self.browse(cr,uid,ids,context)[0].employee_role_id:
-                for employee_role in self.browse(cr,uid,ids,context).employee_role_id :
-                    new_end_date = datetime.strptime(values['date'],"%Y-%m-%d")
-                    role_end_date = datetime.strptime(employee_role.date_in_role_until,"%Y-%m-%d")
-                    current_date = datetime.strptime(self.browse(cr,uid,ids,context)[0].date,"%Y-%m-%d")
-                    if current_date > new_end_date :
-                        if role_end_date > new_end_date :
-                            employee_role.write({'date_in_role_until': values['date']})
+    @api.multi
+    def write(self, values):
+        if values.get('date_start') :
+            raise ValidationError( _("You can not edit the start date of the current project"))
+        if values.get('date') :
+            new_end_date = fields.Datetime.from_string(values['date'])
+            employee_role = self.employee_role_id.filtered(lambda x : x.date_in_role_until > new_end_date)
+            if employee_role:
+                employee_role.write({'date_in_role_until': values['date']})
         if values.has_key('project_role_ids') :
-            for project_id in ids :
-                all_previous_roles_ids = self._get_previous_roles(cr, uid, project_id, context)
+            for project in self :
+                all_previous_roles_ids = project._get_previous_roles()
                 #difference between the assigned roles and the the new list of roles
                 role_to_withdraw = list(set(all_previous_roles_ids).difference(values['project_role_ids'][0][2]))
-                if role_to_withdraw != [] and self.pool.get('project.role').get_assigned_employees_project_roles(cr, uid, [project_id], role_to_withdraw, context) != [] :
-                    raise osv.except_osv(_('Operation Denied'), \
+                if role_to_withdraw != [] and self.env['project.role'].get_assigned_employees_project_roles([project.id], role_to_withdraw) :
+                    raise except_orm(_('Operation Denied'), \
                                          _('Some roles are assigned to users.\n Please withdraw the role from users before to withdraw the role from the project'))
-                project_role_to_withdraw_ids = self.pool.get('project.role').search(cr, uid, [('project_id', '=', project_id), ('role_id', 'in', role_to_withdraw)])
-                self.pool.get('project.role').unlink(cr, uid, project_role_to_withdraw_ids, context) #withdraw role from the project
+                project_role_to_withdraw_ids = self.env['project.role'].search([('project_id', '=', project.id), ('role_id', 'in', role_to_withdraw)])
+                project_role_to_withdraw_ids.unlink() #withdraw role from the project
                 new_roles = list(set(values['project_role_ids'][0][2]).difference(all_previous_roles_ids)) # assign new roles to the project
                 for new_role_id in new_roles :
-                    self.pool.get('project.role').create(cr, uid, {'project_id' :  project_id, 'role_id' : new_role_id}, context)
+                    self.env['project.role'].create({'project_id' :  project.id, 'role_id' : new_role_id})
             del values['project_role_ids']
-        res = super(project, self).write(cr, uid, ids, values, context)
+        res = super(project_project, self).write(values)
         if values.has_key('employee_role_id') :
-            for project_id in ids :
-                self._update_project_users(cr, uid, project_id, context)
+            for project in self :
+                project._update_project_users()
         #self._check_members_role(cr, uid, ids)
         return res
     
-    def unlink(self, cr, uid, ids, context = None):
+    @api.multi
+    def unlink(self):
         # ondelete cascade didn't work, force the elimination of project roles and project members 
-        project_members = self.pool.get('project.member').search(cr, uid, [('project_id', 'in', ids)], context = context)
-        self.pool.get('project.member').unlink(cr, uid, project_members, context)
-        project_roles = self.pool.get('project.role').search(cr, uid, [('project_id', 'in', ids)], context = context)
-        self.pool.get('project.role').unlink(cr, uid, project_roles, context)
-        return super(project, self).unlink(cr, uid, ids, context)
+        self.employee_role_id.unlink()
+        self.employee_role_id.unlink()
+        return super(project_project, self).unlink()
     
-    def assign_role_member_project(self, cr, uid, ids = False, context = None):
+    @api.model
+    def assign_role_member_project(self):
         """
             Cron function to assign default role to existent project members.
         """
-        if context == None :
-            context = {}
-        if not ids :
-            ids = self.search(cr, uid, [], context = context)
         # assign default role to all existent projects
-        self.write(cr, uid, ids, {'project_role_ids' : [[6, False, [1]]]}, context)
-        for project_id in ids :
-            project = self.browse(cr, uid, [project_id], context)[0]
+        self.search([]).write({'project_role_ids' : [[6, False, [1]]]})
+        for project in self.search([]) :
             project_members = project.members
             employee_ids = list(set([emply.id for emply in [member.employee_ids for member in project_members]]))
             for emp in employee_ids :
-                self.write(cr, uid, [project_id], {'employee_role_id':[[0, False, 
-                                                                       {'project_role_id' : project.assigned_role_id[0].id, 
-                                                                        'employee_id' : emp, 
-                                                                        'hours_planned_monthly': 0} \
-                                                                       ]]\
-                                                  }, context)
+                project.write({'employee_role_id':[[0, False, 
+                                                   {'project_role_id' : project.assigned_role_id[0].id, 
+                                                    'employee_id' : emp, 
+                                                    'hours_planned_monthly': 0} \
+                                                   ]]\
+                                                  })
         return
-project()
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4
 #eof $Id$

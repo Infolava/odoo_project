@@ -28,13 +28,13 @@
 # HeadURL:               $HeadURL$
 # --------------------------------------------------------------------------------
 from openerp import models, fields, api, _, SUPERUSER_ID
-from openerp.exceptions import ValidationError
+from openerp.exceptions import ValidationError, except_orm
 from datetime import timedelta
 from calendar import monthrange
+import itertools
 
 class project_member(models.Model):
     _name = "project.member"
-    _inherit = 'project.member'
     
     @api.depends('employee_id')
     def _compute_total_and_real_planned(self):
@@ -78,11 +78,30 @@ class project_member(models.Model):
         if self._context.get('project_id') :
             return self.env['project.project'].browse(self._context.get('project_id')).date
         
+    project_id = fields.Many2one('project.project', string = 'Project', readonly = True)
+    project_role_id = fields.Many2one('project.role', string = 'Role', required = True)
+    hours_planned_monthly = fields.Integer(string = "Monthly Average", required = True)
+    employee_id = fields.Many2one('hr.employee', string = 'Members', required = True)
     date_in_role_from = fields.Date(string = 'Date From', required = True, default = fields.Date.today())
     date_in_role_until = fields.Date(string = 'Date To', required = True, default = _get_date_end)
     hours_planned_total = fields.Integer(compute = _compute_total_and_real_planned, string = 'Planned', readonly = True)
     hours_planned_real = fields.Integer(compute = _compute_total_and_real_planned, string = 'Real Planned', readonly = True)#effective hours
     hours_planned_remaining= fields.Integer(compute = _compute_remaining_hours, string = 'Remaining Hours', readonly = True)
+    
+    @api.depends('project_role_id')
+    @api.constrains('hours_planned_monthly')
+    def _check_employee_effort(self):
+        for member in self :
+            if member.hours_planned_monthly < 0 :
+                raise ValidationError( _("Employee effort must be positive"))
+            if member.project_role_id.selected_effort > member.project_role_id.hours_planned_monthly:
+                raise ValidationError(_("Selected effort exceed role's monthly average"))
+
+    @api.constrains('project_role_id', 'project_id')
+    def _check_role_in_project(self):
+        for member in self :
+            if member.project_role_id.project_id.id != member.project_id.id :
+                raise ValidationError( _("Role must belong to the project"))
     
     @api.constrains('date_in_role_from', 'date_in_role_until')
     def _check_dateFrom_vs_dateTo(self):
@@ -136,5 +155,121 @@ class project_member(models.Model):
                 raise ValidationError("%s already assigned to role %s in the same period %s -> %s." \
                                       %(record.employee_id.name_related, record.project_role_id.role_name, record.date_in_role_from, record.date_in_role_until)
                                       )
+                
+    @api.model
+    def get_employee_role(self, project_id, employee_id) :
+        project_members_roles = self.search([('project_id', '=', project_id), ('employee_id', '=', employee_id)])
+        return [member_role.project_role_id.id for member_role in project_members_roles]
+    
+    @api.model
+    def get_assigned_employees(self, project_role_ids):
+        """
+            Return the list of employee ids assigned to the specified project_rolei_ids
+            @param project_role_ids = list of assigned role ids to the projects
+        """
+        project_member_ids = self.search([('project_role_id', 'in', project_role_ids)])
+        return [project_member.employee_id.id for project_member in project_member_ids]
+    
+    @api.model
+    def update_employee_user_groups(self, employee_ids):
+        """
+            Update Users related to each employee with role groups
+            @param employee_ids : the list of the employee ids to update 
+        """
+        for employee in self.env['hr.employee'].browse(employee_ids) :
+            employee_roles = [role.project_role_id.role_id for role in employee.assigned_role_ids]
+            groups = [role.related_group_ids for role in employee_roles]
+            group_role_ids = [group.id for group in itertools.chain.from_iterable(groups)]
+            user_assigned_gps = [group.id for group in employee.user_id[0].groups_id]
+            updates = list(set(group_role_ids).difference(user_assigned_gps))
+            if updates != [] : # update user groups with the new  groups
+                groups_updates = zip([4] * len(updates), updates)
+                employee.user_id.sudo().write({'groups_id' : groups_updates})
+        return True
+    
+    @api.model
+    def withdraw_employee_groups_users(self, project_members):
+        """
+            Delete role groups from the user related to the employee after withdrawing roles
+            @param project_members : list of dictionaries of project_members records (read from project.members)
+        """
+        
+        def get_diff_implied_grps(list_implied_grps):
+            output = []
+            for list_gps in list_implied_grps:
+                output = list(set(output).difference(list_gps))+list(set(list_gps).difference(output))
+            return output
+        
+        for prj_member in project_members:
+            # get the list of groups assigned to user through project roles
+            employee = self.env['hr.employee'].browse([prj_member['employee_id'][0]])[0]
+            employee_assigned_role = employee.assigned_role_ids
+            epl_gps = [gp.project_role_id.role_id.related_group_ids for gp in employee_assigned_role]
+            gps_id = [gp.id for gp in itertools.chain.from_iterable(epl_gps)]
+            # get the list of groups assigned to user
+            user_gps_id = employee.user_id.groups_id.ids
+            # get the difference : extra user groups
+            grp_diff = list(set(user_gps_id).difference(gps_id))
+            role_group_ids = self.env['project.role'].browse([prj_member['project_role_id'][0]]).get_project_role_groups()
+            # get the common groups between extra user groups and the withdrawn roles
+            updates = list(set(grp_diff).intersection(role_group_ids))
+            if updates :
+                #get implieds_ids groups from role groups
+                implied_grps_ids = [gp.implied_ids.ids for gp in self.env['res.groups'].browse(role_group_ids)]
+                implied_grps_ids = get_diff_implied_grps(implied_grps_ids)
+                updates += implied_grps_ids
+                groups_updates = zip([3] * len(updates), updates)
+                employee.user_id.sudo().write({'groups_id' : groups_updates})
+        return True
+    
+    @api.model
+    def ensure_members_own_no_artifacts(self, project_members):
+        """ 
+            Raise Operation Denied Exception at first hit (member owns artifact)
+            Returns True if none of the members is owner of a projects artifacts
+        """ 
+        for prj_mbr in project_members :
+            role_group_ids = self.env['project.role'].browse([prj_mbr['project_role_id'][0]]).get_project_role_groups()
+            access_create_models = self.sudo().env['ir.model.access'].search([('group_id', 'in', role_group_ids), \
+                                                                                 ('active', '=', True), \
+                                                                                 ('perm_create', '=', True), \
+                                                                                 ('perm_write', '=', True), \
+                                                                                 #('model_id.model', 'not in', ['project.task']), \
+                                                                                 ('model_id.field_id.name', 'in', ['project_id']), \
+                                                                                 ('model_id.field_id.name', 'in', ['owner']), \
+                                                                                 ])
+            model_names = list(set([model_access.model_id.model for model_access in access_create_models]))
+            for model in model_names:
+                user_id = self.env['hr.employee'].browse([prj_mbr['employee_id'][0]])[0].user_id
+                owned_art = self.env[model].search([('owner', '=', user_id.id), ('project_id', '=', prj_mbr['project_id'][0])])
+                if owned_art :
+                    raise except_orm(_('Operation Denied!\n'), _("Could not withdraw user %s from role %s. User owns some artifacts") % (user_id.name, prj_mbr['project_role_id'][1]))
+        return True
+    
+    @api.model
+    def create(self, values):
+        res =  super(project_member, self).create(values)
+        self.update_employee_user_groups([values['employee_id']])
+        return res
+
+    @api.multi
+    def write(self, values):
+        project_members_read = self.read(['project_id', 'employee_id', 'project_role_id'])
+        if values.has_key('employee_id') or values.has_key('project_role_id') :
+            self.ensure_members_own_no_artifacts(project_members_read)
+        res = super(project_member, self).write(values)
+        if values.has_key('employee_id') or values.has_key('project_role_id') :
+            employee_ids = [member.employee_id.id for member in self]
+            self.withdraw_employee_groups_users(project_members_read)
+            self.update_employee_user_groups(list(set(employee_ids)))
+        return res
+    
+    @api.multi
+    def unlink(self):
+        project_members = self.read(['project_id', 'employee_id', 'project_role_id'])
+        self.ensure_members_own_no_artifacts(project_members)
+        res = super(project_member, self).unlink()
+        self.withdraw_employee_groups_users(project_members)
+        return res
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4
 #eof $Id$

@@ -32,6 +32,6 @@ import project_member_role
 import inherited_project_project
 import inherited_hr_employee
 import inherited_ir_rule
-import inherited_project_member
+import project_member
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4
 #eof $Id$
