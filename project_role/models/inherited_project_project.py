@@ -104,7 +104,7 @@ class project_project(models.Model):
             raise ValidationError( _("You can not edit the start date of the current project"))
         if values.get('date') :
             new_end_date = fields.Datetime.from_string(values['date'])
-            employee_role = self.employee_role_id.filtered(lambda x : x.date_in_role_until > new_end_date)
+            employee_role = self.employee_role_id.filtered(lambda x : fields.Datetime.from_string(x.date_in_role_until) > new_end_date)
             if employee_role:
                 employee_role.write({'date_in_role_until': values['date']})
         if values.has_key('project_role_ids') :
