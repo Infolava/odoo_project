@@ -154,5 +154,10 @@ class project_project(models.Model):
                                                   })
         return
 
+    @api.multi
+    def get_closed_project_task_stage(self):
+        self.ensure_one()
+        return self.type_ids.filtered(lambda x : x.closed)
+    
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4
 #eof $Id$

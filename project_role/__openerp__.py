@@ -21,7 +21,7 @@
 # --------------------------------------------------------------------------------
 {
     'name' : 'Project Roles',
-    'version' : '2.1.0',
+    'version' : '2.1.1',
     'author' : 'Infolava',
     'website': 'http://www.infolava.ch',
     'category' : 'Project Management',
@@ -30,6 +30,7 @@
                  'hr_contract_work_place',
                  'hr_public_holidays',
                  'hr_holidays',
+                 'project_stage_closed', # Define closed project stage
                 ],
     'demo_xml' : [],
     'summary': 'Addon to staff projects based on roles and employees contracts',
@@ -43,6 +44,7 @@
               'views/inherited_project_project_view.xml',
               'views/inherited_ir_rule_view.xml',
               'data/project_role_data.xml',
+              'data/project_task_stage.xml',
                   ],
     'active': False,
     'installable': True,
