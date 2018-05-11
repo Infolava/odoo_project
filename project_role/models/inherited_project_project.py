@@ -38,7 +38,7 @@ class project_project(models.Model):
     _name = 'project.project'
     _inherit = 'project.project'
 
-    @api.depends('employee_role_id', 'datetoday')
+    @api.depends('employee_role_id')
     def _get_project_members(self):
         for project in self :
             project_employees = [project_member.employee_id \
