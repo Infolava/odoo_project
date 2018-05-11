@@ -38,10 +38,20 @@ class project_project(models.Model):
     _name = 'project.project'
     _inherit = 'project.project'
 
+    @api.depends('employee_role_id', 'datetoday')
+    def _get_project_members(self):
+        for project in self :
+            project_employees = [project_member.employee_id \
+                                 for project_member in project.employee_role_id \
+                                 if project_member.date_in_role_from <= fields.Date.today() \
+                                 and project_member.date_in_role_until >= fields.Date.today()]
+            project.members =[[6, False, [employee_id.user_id.id for employee_id in project_employees]]]
+            
     project_role_ids = fields.Many2many('project.project.roles', 'project_role', 'project_id', 'role_id', string ='Software Project Role')
     assigned_role_id = fields.One2many('project.role', 'project_id', string ='Assigned Role', ondelete="cascade")
     employee_role_id = fields.One2many('project.member', 'project_id', string ='Project Members', ondelete="cascade")
     privacy_visibility = fields.Selection(default = 'members')
+    members = fields.Many2many(compute = _get_project_members, store = True)
     
     @api.model
     def _get_visibility_selection(self):
@@ -94,8 +104,8 @@ class project_project(models.Model):
     @api.model
     def create(self, values):
         if values.get('date') and values.get('date_start') :
-            if fields.Datetime.from_string(values['date_start']) > fields.Datetime.from_string(values['date']):
-                raise ValidationError( _("project start-date must be lower than project end-date"))
+            if fields.Date.from_string(values['date_start']) > fields.Date.from_string(values['date']):
+                raise ValidationError(_("project start-date must be lower than project end-date"))
         return super(project_project, self).create(values)
              
     @api.multi
@@ -103,8 +113,8 @@ class project_project(models.Model):
         if values.get('date_start') :
             raise ValidationError( _("You can not edit the start date of the current project"))
         if values.get('date') :
-            new_end_date = fields.Datetime.from_string(values['date'])
-            employee_role = self.employee_role_id.filtered(lambda x : fields.Datetime.from_string(x.date_in_role_until) > new_end_date)
+            new_end_date = fields.Date.from_string(values['date'])
+            employee_role = self.employee_role_id.filtered(lambda x : fields.Date.from_string(x.date_in_role_until) > new_end_date)
             if employee_role:
                 employee_role.write({'date_in_role_until': values['date']})
         if values.has_key('project_role_ids') :
@@ -122,16 +132,15 @@ class project_project(models.Model):
                     self.env['project.role'].create({'project_id' :  project.id, 'role_id' : new_role_id})
             del values['project_role_ids']
         res = super(project_project, self).write(values)
-        if values.has_key('employee_role_id') :
-            for project in self :
-                project._update_project_users()
+#         if values.has_key('employee_role_id') :
+#             for project in self :
+#                 project._update_project_users()
         #self._check_members_role(cr, uid, ids)
         return res
     
     @api.multi
     def unlink(self):
         # ondelete cascade didn't work, force the elimination of project roles and project members 
-        self.employee_role_id.unlink()
         self.employee_role_id.unlink()
         return super(project_project, self).unlink()
     
