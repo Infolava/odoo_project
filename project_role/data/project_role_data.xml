@@ -9,7 +9,7 @@
 
 -->
 <openerp>
-	<data noupdate="1">
+	<data>
 	
 		<!-- Default role based on group project user -->
 		<record id="role_project_user" model="project.project.roles">
@@ -29,5 +29,19 @@
 			<field eval="'()'" name="args"/>
 			<field eval="0" name="priority"/>
 		</record>
+		
+		<record forcecreate="True" id="ir_cron_update_project_members" model="ir.cron">
+            <field name="name">Update project members</field>
+            <field eval="True" name="active"/>
+            <field name="user_id" ref="base.user_root"/>
+            <field name="interval_number">1</field>
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field eval="True" name="doall"/>
+            <field eval="'project.project'" name="model"/>
+            <field eval="'_get_project_members'" name="function"/>
+            <field eval="'()'" name="args"/>
+            <field eval="0" name="priority"/>
+        </record>
 	</data>
 </openerp>

@@ -54,6 +54,10 @@ class project_project(models.Model):
     members = fields.Many2many(compute = _get_project_members, store = True)
     
     @api.model
+    def update_project_members(self):
+        self.search([])._get_project_members()
+        
+    @api.model
     def _get_visibility_selection(self):
         """ Override the _get_visibility_selection and add members visibility option. """
         selection = super(project_project, self)._get_visibility_selection()
