@@ -31,7 +31,8 @@
                  'hr_public_holidays',
                  'hr_holidays',
                  'project_stage_closed', # Define closed project stage
-                 'hr_payroll'
+                 'hr_payroll',
+                 'hr_skill'
                 ],
     'demo_xml' : [],
     'summary': 'Addon to staff projects based on roles and employees contracts',
