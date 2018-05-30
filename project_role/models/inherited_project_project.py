@@ -38,24 +38,28 @@ class project_project(models.Model):
     _name = 'project.project'
     _inherit = 'project.project'
 
-    @api.depends('employee_role_id')
-    def _get_project_members(self):
-        for project in self :
-            project_employees = [project_member.employee_id \
-                                 for project_member in project.employee_role_id \
-                                 if project_member.date_in_role_from <= fields.Date.today() \
-                                 and project_member.date_in_role_until >= fields.Date.today()]
-            project.members =[[6, False, [employee_id.user_id.id for employee_id in project_employees]]]
+    #===========================================================================
+    # @api.depends('employee_role_id')
+    # def _get_project_members(self):
+    #     for project in self :
+    #         project_employees = [project_member.employee_id \
+    #                              for project_member in project.employee_role_id \
+    #                              if project_member.date_in_role_from <= fields.Date.today() \
+    #                              and project_member.date_in_role_until >= fields.Date.today()]
+    #         project.members =[[6, False, [employee_id.user_id.id for employee_id in project_employees]]]
+    #===========================================================================
             
     project_role_ids = fields.Many2many('project.project.roles', 'project_role', 'project_id', 'role_id', string ='Software Project Role')
     assigned_role_id = fields.One2many('project.role', 'project_id', string ='Assigned Role', ondelete="cascade")
     employee_role_id = fields.One2many('project.member', 'project_id', string ='Project Members', ondelete="cascade")
     privacy_visibility = fields.Selection(default = 'members')
-    members = fields.Many2many(compute = _get_project_members, store = True)
+    #members = fields.Many2many(compute = _get_project_members, store = True)
     
-    @api.model
-    def update_project_members(self):
-        self.search([])._get_project_members()
+    #===========================================================================
+    # @api.model
+    # def update_project_members(self):
+    #     self.search([])._get_project_members()
+    #===========================================================================
         
     @api.model
     def _get_visibility_selection(self):
