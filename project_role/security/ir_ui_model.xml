@@ -142,5 +142,16 @@
             <field name="model_id" model="ir.model" search="[('model', '=', 'hr.payslip')]"/>
             <field name="group_id" ref="project.group_project_user"/>
         </record>
+        
+        <!-- Project User Access to HR Skill -->
+        <record model="ir.model.access" id="object_hr_skill_RO_prj_mgr">
+            <field name="perm_create"></field>
+            <field name="perm_read">1</field>
+            <field name="perm_write"></field>
+            <field name="perm_unlink"></field>
+            <field name="name">hr.skill [c0_r1_u0_d0]</field>
+            <field name="model_id" model="ir.model" search="[('model', '=', 'hr.skill')]"/>
+            <field name="group_id" ref="project.group_project_user"/>
+        </record>
 	</data>
 </openerp>	
