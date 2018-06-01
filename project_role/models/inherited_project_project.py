@@ -140,9 +140,9 @@ class project_project(models.Model):
                     self.env['project.role'].create({'project_id' :  project.id, 'role_id' : new_role_id})
             del values['project_role_ids']
         res = super(project_project, self).write(values)
-#         if values.has_key('employee_role_id') :
-#             for project in self :
-#                 project._update_project_users()
+        if values.has_key('employee_role_id') :
+            for project in self :
+                project._update_project_users()
         #self._check_members_role(cr, uid, ids)
         return res
     
