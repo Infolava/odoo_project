@@ -103,11 +103,30 @@
 			<field name="domain_force">[('privacy_visibility', 'in', ['public', 'portal', 'employees', 'followers', 'members'])]</field>
 			<field name="groups" eval="[(4, ref('base.group_user')), (4,ref('project.group_project_user')),(4,ref('base.group_hr_manager')), (4, ref('base.group_sale_manager'))]"/>
 		</record>
-		
-		<!-- deactivate hr_payslip rule -->
-		<record id="hr_payroll.property_rule_employee_payslip" model="ir.rule">
-        <field name="active" eval="False"/>
-    </record>
+    
+        <record model="ir.rule" id="hr_officer_payslip">
+            <field name="name">Payslip Rule for hr officer</field> 
+            <field name="model_id" ref="hr_payroll.model_hr_payslip"/>
+            <field name="primary" eval="True"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_hr_manager'))]"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_unlink" eval="1"/>
+            <field name="perm_write" eval="1"/>
+        </record>
+        
+        <record model="ir.rule" id="hr_mgr_payslip">
+            <field name="name">Payslip Rule for hr manager</field> 
+            <field name="model_id" ref="hr_payroll.model_hr_payslp"/>
+            <field name="primary" eval="True"/>
+            <field name="domain_force">[(1,'=',1)]</field>
+            <field name="groups" eval="[(4, ref('base.group_hr_user'))]"/>
+            <field name="perm_create" eval="1"/>
+            <field name="perm_read" eval="1"/>
+            <field name="perm_unlink" eval="1"/>
+            <field name="perm_write" eval="1"/>
+        </record>
 			
 	</data>
 </openerp>
