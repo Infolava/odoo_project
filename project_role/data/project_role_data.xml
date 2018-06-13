@@ -9,7 +9,7 @@
 
 -->
 <openerp>
-	<data>
+	<data noupdate="1">
 	
 		<!-- Default role based on group project user -->
 		<record id="role_project_user" model="project.project.roles">
