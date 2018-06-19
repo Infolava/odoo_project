@@ -30,7 +30,9 @@
 			<field eval="0" name="priority"/>
 		</record>
 		
-		<!--  <record forcecreate="True" id="ir_cron_update_project_members" model="ir.cron">
+	</data>
+	<data>
+		<record forcecreate="True" id="ir_cron_update_project_members" model="ir.cron">
             <field name="name">Update project members</field>
             <field eval="True" name="active"/>
             <field name="user_id" ref="base.user_root"/>
@@ -43,6 +45,6 @@
             <field eval="'update_project_members'" name="function"/>
             <field eval="'()'" name="args"/>
             <field eval="0" name="priority"/>
-        </record> -->
+        </record>
 	</data>
 </openerp>
