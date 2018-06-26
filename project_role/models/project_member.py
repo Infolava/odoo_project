@@ -177,7 +177,12 @@ class project_member(models.Model):
             @param employee_ids : the list of the employee ids to update 
         """
         for employee in self.env['hr.employee'].browse(employee_ids) :
-            employee_roles = [role.project_role_id.role_id for role in employee.assigned_role_ids]
+            employee_roles = []
+            for empl_ass_role in employee.assigned_role_ids :
+                if empl_ass_role.date_in_role_from <= fields.Date.today() and empl_ass_role.date_in_role_until >= fields.Date.today():
+                    employee_roles += empl_ass_role.project_role_id.role_id
+            #employee_roles = [role.project_role_id.role_id for role in employee.assigned_role_ids]
+            
             groups = [role.related_group_ids for role in employee_roles]
             group_role_ids = [group.id for group in itertools.chain.from_iterable(groups)]
             user_assigned_gps = [group.id for group in employee.user_id[0].groups_id]
@@ -204,7 +209,11 @@ class project_member(models.Model):
             # get the list of groups assigned to user through project roles
             employee = self.env['hr.employee'].browse([prj_member['employee_id'][0]])[0]
             employee_assigned_role = employee.assigned_role_ids
-            epl_gps = [gp.project_role_id.role_id.related_group_ids for gp in employee_assigned_role]
+            epl_gps = []
+            for empl_ass_role in employee_assigned_role :
+                if empl_ass_role.date_in_role_until >= fields.Date.today():
+                    epl_gps +=[empl_ass_role.project_role_id.role_id.related_group_ids] 
+            #epl_gps = [gp.project_role_id.role_id.related_group_ids for gp in employee_assigned_role]
             gps_id = [gp.id for gp in itertools.chain.from_iterable(epl_gps)]
             # get the list of groups assigned to user
             user_gps_id = employee.user_id.groups_id.ids
@@ -221,6 +230,46 @@ class project_member(models.Model):
                 groups_updates = zip([3] * len(updates), updates)
                 employee.user_id.sudo().write({'groups_id' : groups_updates})
         return True
+    
+    #===========================================================================
+    # @api.model
+    # def delete_employee_groups_users(self, project_members):
+    #     """
+    #         Delete role groups from the user related to the employee after withdrawing roles
+    #         @param project_members : list of dictionaries of project_members records (read from project.members)
+    #     """
+    #     def get_diff_implied_grps(list_implied_grps):
+    #         output = []
+    #         for list_gps in list_implied_grps:
+    #             output = list(set(output).difference(list_gps))+list(set(list_gps).difference(output))
+    #         return output
+    #     
+    #     for prj_member in project_members:
+    #         # get the list of groups assigned to user through project roles
+    #         employee = self.env['hr.employee'].browse([prj_member['employee_id'][0]])[0]
+    #         employee_assigned_role = employee.assigned_role_ids
+    #         epl_gps = []
+    #         for empl_ass_role in employee_assigned_role :
+    #             if empl_ass_role.date_in_role_until >= fields.Date.today():
+    #                 epl_gps +=[empl_ass_role.project_role_id.role_id.related_group_ids] 
+    #         #epl_gps = [gp.project_role_id.role_id.related_group_ids for gp in employee_assigned_role]
+    #         gps_id = [gp.id for gp in itertools.chain.from_iterable(epl_gps)]
+    #         # get the list of groups assigned to user
+    #         user_gps_id = employee.user_id.groups_id.ids
+    #         # get the difference : extra user groups
+    #         grp_diff = list(set(user_gps_id).difference(gps_id))
+    #         role_group_ids = self.env['project.role'].browse([prj_member['project_role_id'][0]]).get_project_role_groups()
+    #         # get the common groups between extra user groups and the withdrawn roles
+    #         updates = list(set(grp_diff).intersection(role_group_ids))
+    #         if updates :
+    #             #get implieds_ids groups from role groups
+    #             implied_grps_ids = [gp.implied_ids.ids for gp in self.env['res.groups'].browse(role_group_ids)]
+    #             implied_grps_ids = get_diff_implied_grps(implied_grps_ids)
+    #             updates += implied_grps_ids
+    #             groups_updates = zip([3] * len(updates), updates)
+    #             employee.user_id.sudo().write({'groups_id' : groups_updates})
+    #     return True
+    #===========================================================================
     
     @api.model
     def ensure_members_own_no_artifacts(self, project_members):
@@ -249,7 +298,9 @@ class project_member(models.Model):
     @api.model
     def create(self, values):
         res =  super(project_member, self).create(values)
-        self.update_employee_user_groups([values['employee_id']])
+        if res['date_in_role_from'] <= fields.Date.today() \
+           and res['date_in_role_until'] >= fields.Date.today():
+            self.update_employee_user_groups([values['employee_id']])
         return res
 
     @api.multi
@@ -258,7 +309,7 @@ class project_member(models.Model):
         if values.has_key('employee_id') or values.has_key('project_role_id') :
             self.ensure_members_own_no_artifacts(project_members_read)
         res = super(project_member, self).write(values)
-        if values.has_key('employee_id') or values.has_key('project_role_id') :
+        if values.has_key('employee_id') or values.has_key('project_role_id') or values.has_key('date_in_role_from') or values.has_key('date_in_role_until'):
             employee_ids = [member.employee_id.id for member in self]
             self.withdraw_employee_groups_users(project_members_read)
             self.update_employee_user_groups(list(set(employee_ids)))

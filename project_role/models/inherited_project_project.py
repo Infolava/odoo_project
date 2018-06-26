@@ -30,6 +30,7 @@
 
 from openerp import models, fields, api, _, SUPERUSER_ID
 from openerp.exceptions import ValidationError, except_orm
+import itertools
 
 class project_project(models.Model):
     """
@@ -55,7 +56,15 @@ class project_project(models.Model):
     
     @api.model
     def update_project_members(self):
-        self.search([])._get_project_members()
+        for prj in self.search([]):
+            prj._get_project_members()
+            for employee_role in prj.employee_role_id :
+                if employee_role.date_in_role_until <= fields.Date.today():
+                    project_members_read = employee_role.read(['project_id', 'employee_id', 'project_role_id'])
+                    employee_role.withdraw_employee_groups_users(project_members_read)
+                if employee_role.date_in_role_from <= fields.Date.today() \
+                                 and employee_role.date_in_role_until >= fields.Date.today():
+                    employee_role.update_employee_user_groups(employee_role.employee_id)
         
     @api.model
     def _get_visibility_selection(self):
