@@ -64,7 +64,7 @@ class project_project(models.Model):
                     employee_role.withdraw_employee_groups_users(project_members_read)
                 if employee_role.date_in_role_from <= fields.Date.today() \
                                  and employee_role.date_in_role_until >= fields.Date.today():
-                    employee_role.update_employee_user_groups(employee_role.employee_id)
+                    employee_role.update_employee_user_groups(employee_role.employee_id.id)
         
     @api.model
     def _get_visibility_selection(self):
