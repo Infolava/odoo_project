@@ -211,7 +211,8 @@ class project_member(models.Model):
             employee_assigned_role = employee.assigned_role_ids
             epl_gps = []
             for empl_ass_role in employee_assigned_role :
-                if empl_ass_role.date_in_role_until >= fields.Date.today():
+                if empl_ass_role.date_in_role_from <= fields.Date.today() \
+                    and empl_ass_role.date_in_role_until >= fields.Date.today():
                     epl_gps +=[empl_ass_role.project_role_id.role_id.related_group_ids] 
             #epl_gps = [gp.project_role_id.role_id.related_group_ids for gp in employee_assigned_role]
             gps_id = [gp.id for gp in itertools.chain.from_iterable(epl_gps)]
