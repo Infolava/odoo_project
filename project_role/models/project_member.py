@@ -110,6 +110,13 @@ class project_member(models.Model):
                 raise ValidationError(_("The Date From should be later than the Date To"))
         return True
     
+    @api.constrains('employee_id')
+    def _check_employee_user(self):
+        for member in self :
+            if not member.employee_id.user_id:
+                raise ValidationError(_("The employee is not assigned to any user"))
+        return True
+    
     @api.constrains('project_id', 'date_in_role_from', 'date_in_role_until')
     def _check_date_in_role_vs_project(self):
         for member in self :
@@ -171,6 +178,31 @@ class project_member(models.Model):
         return [project_member.employee_id.id for project_member in project_member_ids]
     
     @api.model
+    def withdraw_member_groups(self, employee_id, role_id):
+        employee = self.env['hr.employee'].browse(employee_id)
+        role = self.env['project.role'].browse(role_id)
+        role_group_ids = role.role_id.related_group_ids.ids
+        # search if other role exist with same groups
+        withdrawn_gp_ids = []
+        for gp in role_group_ids :
+            if not employee.assigned_role_ids.filtered(lambda x : gp in x.role_id.related_group_ids.ids \
+                                                and x.date_in_role_from <= fields.Date.today()
+                                                and x.date_in_role_until >= fields.Date.today()) :
+                withdrawn_gp_ids.append(gp)
+        groups_updates = zip([3] * len(withdrawn_gp_ids), withdrawn_gp_ids)
+        employee.user_id.sudo().write({'groups_id' : groups_updates})
+        
+    @api.multi
+    def add_member_groups(self):
+        for member in self.filtered(lambda x : x.date_in_role_from <= fields.Date.today() \
+                                    and x.date_in_role_until >= fields.Date.today()) :
+            role_group_ids = member.role_id.role_id.related_group_ids
+            user_group_ids = member.employee_id.user_id.groups_id
+            diff_grps_ids = role_group_ids - user_group_ids
+            groups_updates = zip([4] * len(diff_grps_ids), diff_grps_ids.ids)
+            member.employee_id.user_id.sudo().write({'groups_id' : groups_updates})
+            
+    @api.model
     def update_employee_user_groups(self, employee_ids):
         """
             Update Users related to each employee with role groups
@@ -185,7 +217,7 @@ class project_member(models.Model):
             
             groups = [role.related_group_ids for role in employee_roles]
             group_role_ids = [group.id for group in itertools.chain.from_iterable(groups)]
-            user_assigned_gps = [group.id for group in employee.user_id[0].groups_id]
+            user_assigned_gps = [group.id for group in employee.user_id.groups_id]
             updates = list(set(group_role_ids).difference(user_assigned_gps))
             if updates != [] : # update user groups with the new  groups
                 groups_updates = zip([4] * len(updates), updates)

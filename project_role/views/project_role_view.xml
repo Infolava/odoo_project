@@ -61,7 +61,7 @@
 			<field name="arch" type="xml">
 				<tree string="Project Member" editable="buttom" colors="grey:(date_in_role_from&gt;current_date) or (date_in_role_until&lt;current_date)">
 					<field name="project_id" invisible="1"/>
-					<field name="employee_id" context="{'current_model':'project.project'}" options="{'create': false, 'create_edit': false}"/>
+					<field name="employee_id" domain="[('user_id', '!=', False)]" context="{'current_model':'project.project'}" options="{'create': false, 'create_edit': false}"/>
 					<field name="project_role_id" domain="[('project_id', '=', parent.id)]" options="{'create': false, 'create_edit': false}"/>
 					<field name="date_in_role_from"/>
 					<field name="date_in_role_until"/>
