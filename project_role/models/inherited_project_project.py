@@ -44,8 +44,8 @@ class project_project(models.Model):
         for project in self :
             project_employees = [project_member.employee_id \
                                  for project_member in project.employee_role_id \
-                                 if project_member.date_in_role_from <= fields.Date.today() \
-                                 and project_member.date_in_role_until >= fields.Date.today()]
+                                 if (fields.Date.from_string(project_member.date_in_role_from) <= fields.Date.from_string(fields.Date.today()) \
+                                 and fields.Date.from_string(project_member.date_in_role_until) >= fields.Date.from_string(fields.Date.today()))]
             project.members =[[6, False, [employee_id.user_id.id for employee_id in project_employees]]]
             
     project_role_ids = fields.Many2many('project.project.roles', 'project_role', 'project_id', 'role_id', string ='Software Project Role')
@@ -59,13 +59,14 @@ class project_project(models.Model):
         for prj in self.search([]):
             prj._get_project_members()
             for employee_role in prj.employee_role_id :
-                if employee_role.date_in_role_until <= fields.Date.today():
+                if fields.Date.from_string(employee_role.date_in_role_until) <= fields.Date.from_string(fields.Date.today()):
                     project_members_read = employee_role.read(['project_id', 'employee_id', 'project_role_id'])
                     employee_role.withdraw_employee_groups_users(project_members_read)
-                if employee_role.date_in_role_from <= fields.Date.today() \
-                                 and employee_role.date_in_role_until >= fields.Date.today():
+                if fields.Date.from_string(employee_role.date_in_role_from) <= fields.Date.from_string(fields.Date.today()) \
+                                 and fields.Date.from_string(employee_role.date_in_role_until) >= fields.Date.from_string(fields.Date.today()):
                     employee_role.update_employee_user_groups(employee_role.employee_id.id)
-        
+        return True
+    
     @api.model
     def _get_visibility_selection(self):
         """ Override the _get_visibility_selection and add members visibility option. """
