@@ -47,5 +47,17 @@
                 </xpath>
 			</field>
 		</record>
+		
+		<record id="inherited_project_task_form__view_wiki" model="ir.ui.view" >
+            <field name="name">inherited_project_task_form_view_wiki</field>
+            <field name="model">project.task</field>
+            <field name="priority" eval="1"/>
+            <field name="inherit_id" ref="project.view_task_form2"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='description']" position="attributes">
+                    <attribute name="widget">wiki</attribute>
+                </xpath>
+            </field>
+        </record>        
 	</data>
 </openerp>
