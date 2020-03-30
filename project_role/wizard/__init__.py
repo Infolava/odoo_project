@@ -1,1 +1,1 @@
-import employee_role_wizard, project_milestone_wizard
+import employee_role_wizard
