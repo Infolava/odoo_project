@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright: © 2020 Infolava GmbH. All rights reserved.
+      ================================================================================
+    This file is part of TransALM
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+-->
+<openerp>
+	<data>
+	
+<!-- 		<record model="ir.ui.view" id="view_project_milestone_form">
+			<field name="name">Project MileStones</field>
+			<field name="model">project.milestone</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Project Milestones" version="7.0">
+					<field name="name_pattern" />
+					<field name="recurring_every"  />
+					<field name="recurring_unit" />
+					<field name="weekdays" />
+					<button name="create_milestone" type="object" string="Create" />
+					or
+					<button string="Cancel" special="cancel" />
+				</form>
+			</field>
+		</record> -->
+
+		<record model="ir.ui.view" id="view_project_milestone_form">
+			<field name="name">Project MileStones</field>
+			<field name="model">project.milestone</field>
+			<field name="priority" eval="1" />
+			<field name="arch" type="xml">
+				<form string="Project Milestone">
+					<sheet>
+						<field name="state" invisible="1" />
+						<div class="oe_title">
+							<div class="oe_edit_only">
+								<label for="name_pattern" />
+							</div>
+							<h1>
+								<field name="name_pattern" required="1" />
+							</h1>
+	
+						</div>
+						<group>
+							<field name="description" />
+						</group>
+						<group>
+							<group col="1">
+								<group>
+									<field name="recurrency" invisible="1" />
+									<field name="start_date" attrs="{'invisible': True}"/>
+                                    <field name="stop_date" attrs="{'invisible': True}"/>
+									<field name="allday" invisible="1"/>
+								</group>
+								<group attrs="{'invisible': [('recurrency','=',False)]}">
+									<label for="interval" />
+									<div>
+										<field name="interval" attrs="{'required': [('recurrency','==',True)]}"
+											class="oe_inline" />
+										<field name="rrule_type" attrs="{'required': [('recurrency','==',True)]}"
+											class="oe_inline" />
+									</div>
+									<label string="Until" for="end_type" />
+									<div>
+										<field name="end_type" attrs="{'required': [('recurrency','==',True)]}"
+											class="oe_inline" />
+										<field name="count"
+											attrs="{'invisible': [('end_type', '!=', 'count')], 'required': [('recurrency','==',True)]}"
+											class="oe_inline" />
+										<field name="final_date"
+											attrs="{'invisible': [('end_type', '!=', 'end_date')], 'required': [('end_type', '=', 'end_date')]}"
+											class="oe_inline" />
+									</div>
+									<label string="Select Weekdays"
+										attrs="{'invisible' :[('rrule_type','not in', ['weekly'])]}" />
+									<group col="2" colspan="1" name="weekdays"
+										attrs="{'invisible' :[('rrule_type','not in', ['weekly'])]}">
+										<field name="mo" />
+										<field name="tu" />
+										<field name="we" />
+										<field name="th" />
+										<field name="fr" />
+										<field name="sa" />
+										<field name="su" />
+									</group>
+	
+									<label string="Day of Month"
+										attrs="{'invisible': [('rrule_type','!=','monthly')]}" />
+	
+									<div attrs="{'invisible': [('rrule_type','!=','monthly')]}">
+										<field name="month_by" />
+										<field name="day"
+											attrs="{'required': [('month_by','=','date'), ('rrule_type','=','monthly')],
+	                                                    'invisible': [('month_by','=','day')]}" />
+										<field name="byday" string="The"
+											attrs="{'required': [('month_by','=','day'), ('rrule_type','=','monthly')], 'invisible': [('month_by','=','date')]}" />
+										<field name="week_list" nolabel="1"
+											attrs="{'required': [('month_by','=','day'), ('rrule_type','=','monthly')], 'invisible': [('month_by','=','date')]}" />
+									</div>
+								</group>
+							</group>
+	
+						</group>
+					</sheet>
+					<footer>
+						<button name="create_milestone" type="object" string="Create" />
+						or
+						<button string="Cancel" special="cancel" />
+					</footer>
+	
+				</form>
+			</field>
+		</record>
+    
+		<record id="action_create_project_milestone_wizard_view" model="ir.actions.act_window">
+			<field name="name">Create Project Milestone</field>
+			<field name="res_model">project.milestone</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">form</field>
+			<field name="target">new</field>
+			<field name="view_id" ref="view_project_milestone_form"/>
+		</record>
+		
+		<act_window id="action_project_milestone_more"
+		    name="Create  Milestone"
+		    src_model="project.project"
+		    res_model="project.milestone"
+		    view_type="form" view_mode="form"
+		    key2="client_action_multi" target="new"
+		    groups="project.group_project_manager"/>
+		    
+	</data>
+</openerp>
