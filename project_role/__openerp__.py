@@ -40,6 +40,7 @@
               'security/ir_ui_model.xml',
               'security/ir_rule.xml',
               'wizard/employee_role_wizard.xml',
+              'wizard/project_milestone_wizard.xml',
               'views/project_project_role_view.xml',
               'views/project_role_view.xml',
               'views/inherited_hr_employee_view.xml',
