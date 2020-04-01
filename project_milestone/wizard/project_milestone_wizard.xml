@@ -51,9 +51,10 @@
 						<group>
 							<group col="1">
 								<group>
+									<field name="project_id" invisible="1" />
 									<field name="recurrency" invisible="1" />
-									<field name="start_date" attrs="{'invisible': True}"/>
-                                    <field name="stop_date" attrs="{'invisible': True}"/>
+									<field name="start_date" invisible="1" />
+                                    <field name="stop_date" invisible="1" />
 									<field name="allday" invisible="1"/>
 								</group>
 								<group attrs="{'invisible': [('recurrency','=',False)]}">
@@ -107,7 +108,7 @@
 						</group>
 					</sheet>
 					<footer>
-						<button name="create_milestone" type="object" string="Create" />
+						<button name="create_milestone" type="object" string="Create Milestone" />
 						or
 						<button string="Cancel" special="cancel" />
 					</footer>

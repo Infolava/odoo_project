@@ -54,12 +54,20 @@ class project_milestone_builder(models.TransientModel):
 #     recurring_every = fields.Integer(string = 'Recurring Every', help = 'recurring Milestone Every Recurring Unit. If zero, the milestone is not recurring')
 #     recurring_unit = fields.Selection([('daily', 'Day(s)'), ('weekly', 'Week(s)'), ('monthly', 'Month(s)'), ('yearly', 'Year(s)')], string = 'Recurring Unit')
 #     weekdays = fields.Selection( [('mo', 'Monday'), ('tu', 'Tuesday'), ('we', 'Wednesday'), ('th', 'Thuesday'), ('fi', 'Friday'), ('sa', 'Saturday'), ('su', 'Sunday')],string="Weekdays")
-
+# 
     @api.model
     def create(self, vals):
         vals['name'] = vals['name_pattern']
+#         vals['message_follower_ids'] = [[6, False, []]]
+#         vals['message_is_follower'] = False
+#         vals['partner_ids'] = [[6, False, []]]
         del vals['name_pattern']
-        self.env['calendar.event'].create(vals)
+        return self.env['calendar.event'].create(vals)
+        #return super(project_milestone_builder, self).create(vals)
+#         
+    @api.multi
+    def create_milestone(self):
+
         return {
                 'type': 'ir.actions.act_window_close',
                 }
