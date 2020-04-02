@@ -27,7 +27,7 @@
             <field name="model">calendar.event</field>
             <field name="inherit_id" ref="calendar.view_calendar_event_form" />
             <field name="arch" type="xml">
-                <field name="description" position="after">
+                <field name="duration" position="after">
                     <field name="project_id" string="Project"/>
                 </field>
              </field>
