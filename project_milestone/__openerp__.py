@@ -43,6 +43,7 @@
     'data' : [
               'wizard/project_milestone_wizard.xml',
               'views/inherited_calendar_event_view.xml',
+              'views/project_milestone_view.xml',
                   ],
     'active': False,
     'installable': True,

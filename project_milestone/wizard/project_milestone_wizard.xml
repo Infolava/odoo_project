@@ -11,26 +11,11 @@
 <openerp>
 	<data>
 	
-<!-- 		<record model="ir.ui.view" id="view_project_milestone_form">
-			<field name="name">Project MileStones</field>
-			<field name="model">project.milestone</field>
-			<field name="type">form</field>
-			<field name="arch" type="xml">
-				<form string="Project Milestones" version="7.0">
-					<field name="name_pattern" />
-					<field name="recurring_every"  />
-					<field name="recurring_unit" />
-					<field name="weekdays" />
-					<button name="create_milestone" type="object" string="Create" />
-					or
-					<button string="Cancel" special="cancel" />
-				</form>
-			</field>
-		</record> -->
 
-		<record model="ir.ui.view" id="view_project_milestone_form">
-			<field name="name">Project MileStones</field>
-			<field name="model">project.milestone</field>
+
+		<record model="ir.ui.view" id="view_project_milestone_builder_form">
+			<field name="name">Create Project MileStones</field>
+			<field name="model">project.milestone.builder</field>
 			<field name="priority" eval="1" />
 			<field name="arch" type="xml">
 				<form string="Project Milestone">
@@ -119,17 +104,17 @@
     
 		<record id="action_create_project_milestone_wizard_view" model="ir.actions.act_window">
 			<field name="name">Create Project Milestone</field>
-			<field name="res_model">project.milestone</field>
+			<field name="res_model">project.milestone.builder</field>
 			<field name="view_type">form</field>
 			<field name="view_mode">form</field>
 			<field name="target">new</field>
-			<field name="view_id" ref="view_project_milestone_form"/>
+			<field name="view_id" ref="view_project_milestone_builder_form"/>
 		</record>
 		
 		<act_window id="action_project_milestone_more"
 		    name="Create  Milestone"
 		    src_model="project.project"
-		    res_model="project.milestone"
+		    res_model="project.milestone.builder"
 		    view_type="form" view_mode="form"
 		    key2="client_action_multi" target="new"
 		    groups="project.group_project_manager"/>

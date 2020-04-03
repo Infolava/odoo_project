@@ -1,32 +1,42 @@
 # -*- encoding: utf-8 -*-
 # --------------------------------------------------------------------------------
 # Project:               TransALM
-# Copyright:           © 2020 All rights reserved.
+# Copyright:           © 2020 Infolava GmbH. All rights reserved.
 # License:
 # --------------------------------------------------------------------------------
 #    This file is part of TransALM
-#
-#    TransALM is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
 #
 #    This program is distributed in the hope that it will be useful,
 #    but WITHOUT ANY WARRANTY; without even the implied warranty of
 #    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #    GNU General Public License for more details.
 #
-#    You should have received a copy of the GNU General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------------------
-# Created:               Mar 30, 2020 10:05:09 AM by hbouzidi
-# Last modified:      2020-03-30 10:05
+# Created:               Apr 2, 2020 11:55:17 PM by atrabelsi
+# Last modified:      2020-04-02 23:55
 #
 # Last Author:           $LastChangedBy$
 # Last Checkin:          $LastChangedDate$
 # Checked out Version:   $LastChangedRevision$
 # HeadURL:               $HeadURL$
 # --------------------------------------------------------------------------------
-import inherited_calendar_event
-import project_milestone
-import inherited_project_project
+from openerp import models, fields, api, _, SUPERUSER_ID
+
+class project_project(models.Model):
+    """
+        Extend the Project Model with project milestone
+    """
+    _name = 'project.project'
+    _inherit = 'project.project'
+
+
+    @api.depends('milestone_ids')
+    def _count_milestone(self):
+        for prj in self :
+            prj.count_milestone = len(prj.milestone_ids.ids)
+        
+    milestone_ids = fields.One2many('project.milestone', 'project_id', string = 'Milestones')
+    count_milestone = fields.Integer(compute = _count_milestone, string = "Milestones")
+    
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4
+#eof $Id$

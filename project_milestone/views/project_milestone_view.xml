@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright:           ©  2020 Infolava GmbH  All rights reserved.
+ ================================================================================
+    This file is part of TransALM
+
+    TransALM is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<openerp>
+    <data>
+		<record model="ir.ui.view" id="view_project_milestone_form">
+			<field name="name">Project MileStones</field>
+			<field name="model">project.milestone</field>
+			<field name="type">form</field>
+			<field name="arch" type="xml">
+				<form string="Project Milestones" >
+					<sheet>
+						<group>
+							<field name="name" />
+							<field name="date"  />
+							<field name="project_id" />
+							<field name="event_id" />
+						</group>
+					</sheet>
+				</form>
+			</field>
+		</record>
+	
+		<record model="ir.ui.view" id="view_project_milestone_tree">
+			<field name="name">Project MileStones</field>
+			<field name="model">project.milestone</field>
+			<field name="type">tree</field>
+			<field name="arch" type="xml">
+				<tree string="Project Milestones" >
+					<field name="name" />
+					<field name="project_id" />
+					<field name="date"  />
+				</tree>
+			</field>
+		</record>
+	
+    
+		<record id="action_project_milestone_form_view" model="ir.actions.act_window">
+			<field name="name">Project Milestone</field>
+			<field name="res_model">project.milestone</field>
+			<field name="view_type">form</field>
+			<field name="view_mode">tree,form</field>
+            <field name="context">{
+                'search_default_project_id': [active_id],
+                'default_project_id': active_id,
+                'active_test': False,
+            }</field>
+		</record>
+		
+		<!-- Add Milestone to projecet view as box button -->
+        <record id="extended_view_project_form" model="ir.ui.view">
+            <field name="name">Project Milestone</field>
+            <field name="model">project.project</field>
+            <field name="inherit_id" ref="project.edit_project" />
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='attachment_tree_view']" position="after">
+					     <button class="oe_inline oe_stat_button" type="action" 
+                            name="%(action_project_milestone_form_view)d"  icon="fa-calendar-o" >
+                            <field string="Milestones" name="count_milestone" widget="statinfo"/>
+                        </button>
+				</xpath>
+             </field>
+        </record>
+    </data>
+</openerp>
