@@ -44,6 +44,7 @@
               'wizard/project_milestone_wizard.xml',
               'views/inherited_calendar_event_view.xml',
               'views/project_milestone_view.xml',
+              'security/project_milestone_right_rule.xml',
                   ],
     'active': False,
     'installable': True,
