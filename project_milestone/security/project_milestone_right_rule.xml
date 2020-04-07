@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright:           ©  2020 Infolava GmbH  All rights reserved.
+ ================================================================================
+    This file is part of TransALM
+
+    TransALM is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+
+<openerp>
+    <data>
+    
+        <!-- Access Right Definition for project.project.roles model -->
+        <record model="ir.model.access" id="object_project_milestone_PM_full_access">
+            <field name="perm_create">1</field>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_unlink">1</field>
+            <field name="name">project.milestone PM [c1_r1_u1_d1]</field>
+            <field name="model_id" model="ir.model" search="[('model', '=', 'project.milestone')]"/>
+            <field name="group_id" ref="project.group_project_manager"/>
+        </record>
+        
+        <record model="ir.model.access" id="object_project_milestone_PU_read_access">
+            <field name="perm_create"></field>
+            <field name="perm_read">1</field>
+            <field name="perm_write"></field>
+            <field name="perm_unlink"></field>
+            <field name="name">project.milestone PU [c0_r1_u0_d0]</field>
+            <field name="model_id" model="ir.model" search="[('model', '=', 'project.milestone')]"/>
+            <field name="group_id" ref="project.group_project_user"/>
+        </record>
+    </data>
+</openerp>
