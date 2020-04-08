@@ -21,7 +21,7 @@
 <openerp>
     <data>
     
-        <!-- Access Right Definition for project.project.roles model -->
+        <!-- Access Right Definition for project.milestone  model -->
         <record model="ir.model.access" id="object_project_milestone_PM_full_access">
             <field name="perm_create">1</field>
             <field name="perm_read">1</field>
