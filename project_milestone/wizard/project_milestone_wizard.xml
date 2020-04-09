@@ -11,6 +11,10 @@
 <openerp>
 	<data>
 	
+	    <record forcecreate="1" id="seq_type_milestone_main" model="ir.sequence.type">
+            <field name="name">Milestone sequence</field>
+            <field name="code">milestone.sequence</field>
+        </record>
 
 
 		<record model="ir.ui.view" id="view_project_milestone_builder_form">
