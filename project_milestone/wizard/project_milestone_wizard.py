@@ -34,7 +34,7 @@ class project_milestone_builder(models.TransientModel):
     
     sequence_id = fields.Many2one('ir.sequence', 'Sequence', required = True, ondelete="cascade")
     event_id = fields.Many2one('calendar.event', 'Event', required = True, ondelete="cascade")
-       
+    recurrency = fields.Boolean('Recurrent', default = True)
     
     @api.onchange('interval')
     def on_change(self):

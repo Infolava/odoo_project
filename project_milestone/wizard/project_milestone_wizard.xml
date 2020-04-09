@@ -24,7 +24,7 @@
 						
 							<label string="Name Pattern" for="prefix" />
 							<div>							
-								<field name="prefix" required="1" class="oe_inline" placeholder="Milestone_%(year)s."/>						
+								<field name="prefix" required="1" class="oe_inline" placeholder="Milestone_%%(year)s."/>						
 								<field name="padding" class="oe_inline" />
 							</div>
 						</group>
@@ -106,7 +106,7 @@
 			<field name="view_type">form</field>
 			<field name="view_mode">form</field>
 			<field name="target">new</field>
-			<field name="view_id" ref="view_project_milestone_builder_form"/>
+			<field name="view_id" ref="project_milestone.view_project_milestone_builder_form"/>
 		</record>
 		
 		<act_window id="action_project_milestone_more"
