@@ -19,15 +19,21 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 # --------------------------------------------------------------------------------
-# Created:               Mar 30, 2020 10:05:09 AM by hbouzidi
-# Last modified:      2020-03-30 10:05
+# Created:               Apr 9, 2020 11:58:38 AM by hbouzidi
+# Last modified:      2020-04-09 11:58
 #
 # Last Author:           $LastChangedBy$
 # Last Checkin:          $LastChangedDate$
 # Checked out Version:   $LastChangedRevision$
 # HeadURL:               $HeadURL$
 # --------------------------------------------------------------------------------
-import inherited_calendar_event
-import project_milestone
-import inherited_project_project
-import inherited_project_task
+from openerp import models, fields, api, _, SUPERUSER_ID
+from openerp.exceptions import except_orm, ValidationError
+
+class project_task(models.Model):
+    """
+    """
+    _name = 'project.task'
+    _inherit = 'project.task'
+    
+    milestone_id = fields.Many2one('project.milestone', string = 'Milestone')
