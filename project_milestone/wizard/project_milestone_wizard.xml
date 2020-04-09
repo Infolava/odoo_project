@@ -34,6 +34,7 @@
 						<group>
 							<group col="1">
 								<group>
+									<field name="state" invisible="1" />
 									<field name="project_id" invisible="1" />
 									<field name="recurrency" invisible="1" />
 									<field name="start_date" invisible="1" />
