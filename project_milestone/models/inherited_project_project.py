@@ -38,5 +38,18 @@ class project_project(models.Model):
     milestone_ids = fields.One2many('project.milestone', 'project_id', string = 'Milestones')
     count_milestone = fields.Integer(compute = _count_milestone, string = "Milestones")
     
+    @api.multi
+    def return_milestone_view(self) :
+        self.ensure_one()
+        return {
+            'name': _('Milestone'),
+            'domain': [('project_id', '=', self.id)],
+            'res_model': 'project.milestone',
+            'type': 'ir.actions.act_window',
+            'view_id': False,
+            'view_mode': 'calendar,tree,form',
+            'view_type': 'form',
+        }
+    
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4
 #eof $Id$
