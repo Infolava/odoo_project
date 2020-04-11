@@ -57,6 +57,10 @@ class project_milestone_builder(models.TransientModel):
     @api.model
     def create(self, vals):
         vals['name'] = 'milestone.sequence'
+        if not vals['recurrency'] :
+            # Force create event at project end date
+            vals['start_date'] = self.env['project.project'].browse(vals['project_id']).date
+            vals['stop_date'] = self.env['project.project'].browse(vals['project_id']).date
         vals['event_id'] = self.env['calendar.event'].create(vals).id
         vals['code'] = 'milestone.sequence'
         vals['sequence_id'] = self.env['ir.sequence'].create(vals).id
@@ -64,12 +68,15 @@ class project_milestone_builder(models.TransientModel):
 #         
     @api.multi
     def create_milestone(self):
-        events = self.event_id.search(['&',['id', '=', self.event_id.id], '&', ['start', '>=', self.event_id.start_date], ['stop', '<=', self.event_id.final_date]], order = 'start_date asc')
-        
-        for event in events :
-            new_name = self.pool.get('ir.sequence').next_by_id(self._cr, self._uid, self.sequence_id.id)
-            new_ev = event._detach_one_event({'name' : new_name})
-            self.env['project.milestone'].create({'project_id' : self.project_id.id, 'event_id' : new_ev[0]})
+        if self.recurrency :
+            events = self.event_id.search(['&',['id', '=', self.event_id.id], '&', ['start', '>=', self.event_id.start_date], ['stop', '<=', self.event_id.final_date]], order = 'start_date asc')
+            for event in events :
+                new_name = self.pool.get('ir.sequence').next_by_id(self._cr, self._uid, self.sequence_id.id)
+                new_ev = event._detach_one_event({'name' : new_name})
+                self.env['project.milestone'].create({'project_id' : self.project_id.id, 'event_id' : new_ev[0]})
+        else :
+            self.event_id.name = self.pool.get('ir.sequence').next_by_id(self._cr, self._uid, self.sequence_id.id)
+            self.env['project.milestone'].create({'project_id' : self.project_id.id, 'event_id' : self.event_id.id})
         return {
                 'type': 'ir.actions.act_window_close',
                 }
