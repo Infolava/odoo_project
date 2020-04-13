@@ -35,11 +35,17 @@ class project_milestone_builder(models.TransientModel):
     sequence_id = fields.Many2one('ir.sequence', 'Sequence', required = True, ondelete="cascade")
     event_id = fields.Many2one('calendar.event', 'Event', required = True, ondelete="cascade")
     recurrency = fields.Boolean('Recurrent', default = True)
+    padding = fields.Integer(default = 3)
     
     @api.onchange('interval')
     def on_change(self):
         if not self.interval :
             self.recurrency = False
+            
+    @api.onchange('start_date')
+    def on_change_start(self):
+        if self.start_date :
+            self.stop_date = self.start_date
     
     @api.model
     def default_get(self, field_list):
@@ -47,7 +53,6 @@ class project_milestone_builder(models.TransientModel):
         if self._context and self._context.get('active_id') :
             project = self.env['project.project'].browse(self._context['active_id'])
             default['start_date'] = project.date_start
-            default['stop_date'] = project.date_start
             default['allday'] = True
             default['project_id'] = project.id
             default['final_date'] = project.date
@@ -57,10 +62,6 @@ class project_milestone_builder(models.TransientModel):
     @api.model
     def create(self, vals):
         vals['name'] = 'milestone.sequence'
-        if not vals['recurrency'] :
-            # Force create event at project end date
-            vals['start_date'] = self.env['project.project'].browse(vals['project_id']).date
-            vals['stop_date'] = self.env['project.project'].browse(vals['project_id']).date
         vals['event_id'] = self.env['calendar.event'].create(vals).id
         vals['code'] = 'milestone.sequence'
         vals['sequence_id'] = self.env['ir.sequence'].create(vals).id

@@ -28,8 +28,8 @@
 						
 							<label string="Name Pattern" for="prefix" />
 							<div>							
-								<field name="prefix" required="1" class="oe_inline" placeholder="Milestone_%%(year)s."/>						
-								<field name="padding" class="oe_inline" />
+								<field name="prefix" required="1" class="oe_inline" placeholder="Milestone_%%(year)s."/>
+								<field name="padding" invisible="1" />						
 							</div>
 						</group>
 						<group>
@@ -41,7 +41,7 @@
 									<field name="state" invisible="1" />
 									<field name="project_id" invisible="1" />
 									<field name="recurrency" invisible="1" />
-									<field name="start_date" invisible="1" />
+									<field name="start_date" required="1"/>
                                     <field name="stop_date" invisible="1" />
 									<field name="allday" invisible="1"/>
 								</group>
