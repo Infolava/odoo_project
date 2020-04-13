@@ -41,5 +41,16 @@
             <field name="model_id" model="ir.model" search="[('model', '=', 'project.milestone')]"/>
             <field name="group_id" ref="project.group_project_user"/>
         </record>
+        
+        <record model="ir.model.access" id="object_ir_sequence_PM_full_access">
+            <field name="perm_create">1</field>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_unlink">1</field>
+            <field name="name">ir.sequence PM [c1_r1_u1_d1]</field>
+            <field name="model_id" model="ir.model" search="[('model', '=', 'ir.sequence')]"/>
+            <field name="group_id" ref="project.group_project_manager"/>
+        </record>
+        
     </data>
 </openerp>
