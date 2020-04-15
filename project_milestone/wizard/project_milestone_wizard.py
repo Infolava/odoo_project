@@ -72,11 +72,11 @@ class project_milestone_builder(models.TransientModel):
         if self.recurrency :
             events = self.event_id.search(['&',['id', '=', self.event_id.id], '&', ['start', '>=', self.event_id.start_date], ['stop', '<=', self.event_id.final_date]], order = 'start_date asc')
             for event in events :
-                new_name = self.pool.get('ir.sequence').next_by_id(self._cr, self._uid, self.sequence_id.id)
+                new_name = self.pool.get('ir.sequence').next_by_id(self._cr, self._uid, self.sequence_id.id, context = {'force_date':event.start_date})
                 new_ev = event._detach_one_event({'name' : new_name})
                 self.env['project.milestone'].create({'project_id' : self.project_id.id, 'event_id' : new_ev[0]})
         else :
-            self.event_id.name = self.pool.get('ir.sequence').next_by_id(self._cr, self._uid, self.sequence_id.id)
+            self.event_id.name = self.pool.get('ir.sequence').next_by_id(self._cr, self._uid, self.sequence_id.id, context = {'force_date':self.event_id.start_date})
             self.env['project.milestone'].create({'project_id' : self.project_id.id, 'event_id' : self.event_id.id})
         return {
                 'type': 'ir.actions.act_window_close',

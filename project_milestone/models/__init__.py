@@ -31,3 +31,4 @@ import inherited_calendar_event
 import project_milestone
 import inherited_project_project
 import inherited_project_task
+import inherited_ir_sequence
