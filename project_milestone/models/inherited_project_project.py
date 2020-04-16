@@ -49,6 +49,7 @@ class project_project(models.Model):
             'view_id': False,
             'view_mode': 'calendar,tree,form',
             'view_type': 'form',
+            'context' : {'virtual_id' : False}
         }
     
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4
