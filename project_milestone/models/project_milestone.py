@@ -31,7 +31,7 @@ class project_milestone(models.Model):
     project_id = fields.Many2one('project.project', string='Project')
     event_id = fields.Many2one('calendar.event')
     date = fields.Date(related = 'event_id.start_date', string = "Date")
-    name = fields.Char(related = "event_id.name", string = "Name")
+    name = fields.Char(related = "event_id.name", string = "Name", store = True)
     
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4
