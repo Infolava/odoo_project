@@ -38,8 +38,10 @@ class ir_sequence(models.Model):
         # Override to force event date
         if context is None:
             context = {}
-       
-        t = datetime.strptime(context.get('force_date'), DF) or datetime.now(pytz.timezone(context.get('tz') or 'UTC'))
+        if context.get('force_date') :
+            t = datetime.strptime(context.get('force_date'), DF) 
+        else :
+            t = datetime.now(pytz.timezone(context.get('tz') or 'UTC'))
         sequences = {
             'year': '%Y', 'month': '%m', 'day': '%d', 'y': '%y', 'doy': '%j', 'woy': '%W',
             'weekday': '%w', 'h24': '%H', 'h12': '%I', 'min': '%M', 'sec': '%S'
