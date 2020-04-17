@@ -1,0 +1,627 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* project_milestone
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 8.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-04-17 14:42+0000\n"
+"PO-Revision-Date: 2020-04-17 18:38+0200\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 2.2.4\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+#. module: project_milestone
+#: field:project.milestone.builder,active:0
+msgid "Active"
+msgstr "Active"
+
+#. module: project_milestone
+#: field:project.milestone.builder,allday:0
+msgid "All Day"
+msgstr "All Day"
+
+#. module: project_milestone
+#: field:project.milestone.builder,is_attendee:0
+msgid "Attendee"
+msgstr "Attendee"
+
+#. module: project_milestone
+#: field:project.milestone.builder,attendee_status:0
+msgid "Attendee Status"
+msgstr "Attendee Status"
+
+#. module: project_milestone
+#: field:project.milestone.builder,attendee_ids:0
+#: field:project.milestone.builder,partner_ids:0
+msgid "Attendees"
+msgstr "Attendees"
+
+#. module: project_milestone
+#: field:project.milestone.builder,byday:0
+msgid "By day"
+msgstr "By day"
+
+#. module: project_milestone
+#: field:project.milestone.builder,start:0
+msgid "Calculated start"
+msgstr "Calculated start"
+
+#. module: project_milestone
+#: field:project.milestone.builder,stop:0
+msgid "Calculated stop"
+msgstr "Calculated stop"
+
+#. module: project_milestone
+#: view:project.milestone.builder:project_milestone.view_project_milestone_builder_form
+msgid "Cancel"
+msgstr "Cancel"
+
+#. module: project_milestone
+#: field:project.milestone.builder,company_id:0
+msgid "Company"
+msgstr "Company"
+
+#. module: project_milestone
+#: model:ir.actions.act_window,name:project_milestone.action_project_milestone_more
+msgid "Create  Milestone"
+msgstr "Meilenstein Anlegen"
+
+#. module: project_milestone
+#: view:project.milestone.builder:project_milestone.view_project_milestone_builder_form
+msgid "Create Milestone"
+msgstr "Meilenstein Anlegen"
+
+#. module: project_milestone
+#: model:ir.actions.act_window,name:project_milestone.action_create_project_milestone_wizard_view
+msgid "Create Project Milestone"
+msgstr "Meilenstein Anlegen"
+
+#. module: project_milestone
+#: field:project.milestone,create_uid:0
+#: field:project.milestone.builder,create_uid:0
+msgid "Created by"
+msgstr "Created by"
+
+#. module: project_milestone
+#: field:project.milestone,create_date:0
+#: field:project.milestone.builder,create_date:0
+msgid "Created on"
+msgstr "Created on"
+
+#. module: project_milestone
+#: field:project.milestone,date:0
+#: field:project.milestone.builder,display_start:0
+msgid "Date"
+msgstr "Date"
+
+#. module: project_milestone
+#: field:project.milestone.builder,day:0
+msgid "Date of month"
+msgstr "Date of month"
+
+#. module: project_milestone
+#: help:project.milestone.builder,message_last_post:0
+msgid "Date of the last message posted on the record."
+msgstr "Date of the last message posted on the record."
+
+#. module: project_milestone
+#: view:project.milestone.builder:project_milestone.view_project_milestone_builder_form
+msgid "Day of Month"
+msgstr "Day of Month"
+
+#. module: project_milestone
+#: field:project.milestone.builder,description:0
+msgid "Description"
+msgstr "Description"
+
+#. module: project_milestone
+#: field:project.milestone,display_name:0
+#: field:project.milestone.builder,display_name:0
+msgid "Display Name"
+msgstr "Display Name"
+
+#. module: project_milestone
+#: field:project.milestone.builder,duration:0
+msgid "Duration"
+msgstr "Duration"
+
+#. module: project_milestone
+#: field:project.milestone.builder,stop_date:0
+msgid "End Date"
+msgstr "End Date"
+
+#. module: project_milestone
+#: field:project.milestone.builder,stop_datetime:0
+msgid "End Datetime"
+msgstr "End Datetime"
+
+#. module: project_milestone
+#: model:ir.model,name:project_milestone.model_calendar_event
+#: field:project.milestone.builder,event_id:0
+msgid "Event"
+msgstr "Termin"
+
+#. module: project_milestone
+#: field:project.milestone.builder,display_time:0
+msgid "Event Time"
+msgstr "Event Time"
+
+#. module: project_milestone
+#: field:project.milestone,event_id:0
+msgid "Event id"
+msgstr "Event id"
+
+#. module: project_milestone
+#: field:project.milestone.builder,message_follower_ids:0
+msgid "Followers"
+msgstr "Followers"
+
+#. module: project_milestone
+#: field:project.milestone.builder,fr:0
+msgid "Fri"
+msgstr "Fri"
+
+#. module: project_milestone
+#: help:project.milestone.builder,message_summary:0
+msgid ""
+"Holds the Chatter summary (number of messages, ...). This summary is "
+"directly in html format in order to be inserted in kanban views."
+msgstr ""
+"Holds the Chatter summary (number of messages, ...). This summary is "
+"directly in html format in order to be inserted in kanban views."
+
+#. module: project_milestone
+#: field:project.milestone,id:0 field:project.milestone.builder,id:0
+msgid "ID"
+msgstr "ID"
+
+#. module: project_milestone
+#: help:project.milestone.builder,message_unread:0
+msgid "If checked new messages require your attention."
+msgstr "If checked new messages require your attention."
+
+#. module: project_milestone
+#: help:project.milestone.builder,active:0
+msgid ""
+"If the active field is set to false, it will allow you to hide the event "
+"alarm information without removing it."
+msgstr ""
+"If the active field is set to false, it will allow you to hide the event "
+"alarm information without removing it."
+
+#. module: project_milestone
+#: field:project.milestone.builder,implementation:0
+msgid "Implementation"
+msgstr "Implementation"
+
+#. module: project_milestone
+#: field:project.milestone.builder,number_increment:0
+msgid "Increment Number"
+msgstr "Increment Number"
+
+#. module: project_milestone
+#: field:project.project,amount_invoiced:0
+msgid "Invoiced Amount"
+msgstr "Invoiced Amount"
+
+#. module: project_milestone
+#: field:project.milestone.builder,message_is_follower:0
+msgid "Is a Follower"
+msgstr "Is a Follower"
+
+#. module: project_milestone
+#: help:project.project,amount_max:0
+msgid "Keep empty if this contract is not limited to a total fixed price."
+msgstr "Keep empty if this contract is not limited to a total fixed price."
+
+#. module: project_milestone
+#: field:project.milestone.builder,message_last_post:0
+msgid "Last Message Date"
+msgstr "Last Message Date"
+
+#. module: project_milestone
+#: field:project.milestone,__last_update:0
+#: field:project.milestone.builder,__last_update:0
+msgid "Last Modified on"
+msgstr "Last Modified on"
+
+#. module: project_milestone
+#: field:project.milestone,write_uid:0
+#: field:project.milestone.builder,write_uid:0
+msgid "Last Updated by"
+msgstr "Last Updated by"
+
+#. module: project_milestone
+#: field:project.milestone,write_date:0
+#: field:project.milestone.builder,write_date:0
+msgid "Last Updated on"
+msgstr "Last Updated on"
+
+#. module: project_milestone
+#: help:project.milestone.builder,rrule_type:0
+msgid "Let the event automatically repeat at that interval"
+msgstr "Let the event automatically repeat at that interval"
+
+#. module: project_milestone
+#: field:project.milestone.builder,location:0
+msgid "Location"
+msgstr "Location"
+
+#. module: project_milestone
+#: help:project.milestone.builder,location:0
+msgid "Location of Event"
+msgstr "Location of Event"
+
+#. module: project_milestone
+#: field:project.project,amount_max:0
+msgid "Max. Invoice Price"
+msgstr "Max. Invoice Price"
+
+#. module: project_milestone
+#: field:project.milestone.builder,name:0
+msgid "Meeting Subject"
+msgstr "Meeting Subject"
+
+#. module: project_milestone
+#: field:project.milestone.builder,message_ids:0
+msgid "Messages"
+msgstr "Messages"
+
+#. module: project_milestone
+#: help:project.milestone.builder,message_ids:0
+msgid "Messages and communication history"
+msgstr "Messages and communication history"
+
+#. module: project_milestone
+#: code:addons/project_milestone/models/inherited_project_project.py:45
+#: view:project.milestone:project_milestone.view_project_milestone_calendar
+#: field:project.task,milestone_id:0
+#, python-format
+msgid "Milestone"
+msgstr "Meilenstein"
+
+#. module: project_milestone
+#: view:project.milestone.builder:project_milestone.view_project_milestone_builder_form
+msgid "Milestone_%(year)s."
+msgstr "Milestone_%(year)s."
+
+#. module: project_milestone
+#: view:project.project:project_milestone.extended_view_project_form
+#: field:project.project,count_milestone:0
+#: field:project.project,milestone_ids:0
+msgid "Milestones"
+msgstr "Meilensteine"
+
+#. module: project_milestone
+#: field:project.milestone.builder,mo:0
+msgid "Mon"
+msgstr "Mon"
+
+#. module: project_milestone
+#: field:project.milestone,name:0
+msgid "Name"
+msgstr "Name"
+
+#. module: project_milestone
+#: view:project.milestone.builder:project_milestone.view_project_milestone_builder_form
+msgid "Name Pattern"
+msgstr "Name Pattern"
+
+#. module: project_milestone
+#: field:project.milestone.builder,number_next:0
+#: field:project.milestone.builder,number_next_actual:0
+msgid "Next Number"
+msgstr "Next Number"
+
+#. module: project_milestone
+#: help:project.milestone.builder,number_next:0
+msgid "Next number of this sequence"
+msgstr "Next number of this sequence"
+
+#. module: project_milestone
+#: help:project.milestone.builder,number_next_actual:0
+msgid ""
+"Next number that will be used. This number can be incremented frequently so "
+"the displayed value might already be obsolete"
+msgstr ""
+"Next number that will be used. This number can be incremented frequently so "
+"the displayed value might already be obsolete"
+
+#. module: project_milestone
+#: field:project.milestone.builder,month_by:0
+msgid "Option"
+msgstr "Option"
+
+#. module: project_milestone
+#: field:project.milestone.builder,padding:0
+msgid "Padding"
+msgstr "Padding"
+
+#. module: project_milestone
+#: field:project.milestone.builder,prefix:0
+msgid "Prefix"
+msgstr "Prefix"
+
+#. module: project_milestone
+#: help:project.milestone.builder,prefix:0
+msgid "Prefix value of the record for the sequence"
+msgstr "Prefix value of the record for the sequence"
+
+#. module: project_milestone
+#: field:project.project,pricelist_id:0
+msgid "Pricelist"
+msgstr "Pricelist"
+
+#. module: project_milestone
+#: field:project.milestone.builder,class:0
+msgid "Privacy"
+msgstr "Privacy"
+
+#. module: project_milestone
+#: view:calendar.event:project_milestone.extended_view_calendar_event_project_form
+#: view:calendar.event:project_milestone.extended_view_calendar_event_project_form_popup
+#: field:calendar.event,project_id:0
+#: model:ir.model,name:project_milestone.model_project_project
+#: field:project.milestone,project_id:0
+#: field:project.milestone.builder,project_id:0
+msgid "Project"
+msgstr "Projekt"
+
+#. module: project_milestone
+#: model:ir.actions.act_window,name:project_milestone.action_project_milestone_form_view
+#: model:ir.ui.menu,name:project_milestone.menu_project_milestone
+#: view:project.milestone.builder:project_milestone.view_project_milestone_builder_form
+msgid "Project Milestone"
+msgstr "Project Milestone"
+
+#. module: project_milestone
+#: view:project.milestone:project_milestone.view_project_milestone_form
+#: view:project.milestone:project_milestone.view_project_milestone_tree
+msgid "Project Milestones"
+msgstr "Project Milestones"
+
+#. module: project_milestone
+#: field:project.milestone.builder,end_type:0
+msgid "Recurrence Termination"
+msgstr "Recurrence Termination"
+
+#. module: project_milestone
+#: field:project.milestone.builder,rrule_type:0
+msgid "Recurrency"
+msgstr "Recurrency"
+
+#. module: project_milestone
+#: field:project.milestone.builder,recurrency:0
+msgid "Recurrent"
+msgstr "Recurrent"
+
+#. module: project_milestone
+#: field:project.milestone.builder,recurrent_id:0
+msgid "Recurrent ID"
+msgstr "Recurrent ID"
+
+#. module: project_milestone
+#: field:project.milestone.builder,recurrent_id_date:0
+msgid "Recurrent ID date"
+msgstr "Recurrent ID date"
+
+#. module: project_milestone
+#: field:project.milestone.builder,rrule:0
+msgid "Recurrent Rule"
+msgstr "Recurrent Rule"
+
+#. module: project_milestone
+#: field:project.milestone.builder,alarm_ids:0
+msgid "Reminders"
+msgstr "Reminders"
+
+#. module: project_milestone
+#: field:project.milestone.builder,count:0
+msgid "Repeat"
+msgstr "Repeat"
+
+#. module: project_milestone
+#: field:project.milestone.builder,interval:0
+msgid "Repeat Every"
+msgstr "Repeat Every"
+
+#. module: project_milestone
+#: field:project.milestone.builder,final_date:0
+msgid "Repeat Until"
+msgstr "Repeat Until"
+
+#. module: project_milestone
+#: help:project.milestone.builder,interval:0
+msgid "Repeat every (Days/Week/Month/Year)"
+msgstr "Repeat every (Days/Week/Month/Year)"
+
+#. module: project_milestone
+#: help:project.milestone.builder,count:0
+msgid "Repeat x times"
+msgstr "Repeat x times"
+
+#. module: project_milestone
+#: field:project.milestone.builder,user_id:0
+msgid "Responsible"
+msgstr "Responsible"
+
+#. module: project_milestone
+#: field:project.milestone.builder,sa:0
+msgid "Sat"
+msgstr "Sat"
+
+#. module: project_milestone
+#: view:project.milestone.builder:project_milestone.view_project_milestone_builder_form
+msgid "Select Weekdays"
+msgstr "Select Weekdays"
+
+#. module: project_milestone
+#: field:project.milestone.builder,sequence_id:0
+msgid "Sequence"
+msgstr "Sequence"
+
+#. module: project_milestone
+#: field:project.milestone.builder,code:0
+msgid "Sequence Type"
+msgstr "Sequence Type"
+
+#. module: project_milestone
+#: field:project.milestone.builder,fiscal_ids:0
+msgid "Sequences"
+msgstr "Sequences"
+
+#. module: project_milestone
+#: field:project.milestone.builder,show_as:0
+msgid "Show Time as"
+msgstr "Show Time as"
+
+#. module: project_milestone
+#: field:project.milestone.builder,start_date:0
+msgid "Start Date"
+msgstr "Startdatum"
+
+#. module: project_milestone
+#: field:project.milestone.builder,start_datetime:0
+msgid "Start DateTime"
+msgstr "Start DateTime"
+
+#. module: project_milestone
+#: field:project.milestone.builder,state:0
+msgid "Status"
+msgstr "Status"
+
+#. module: project_milestone
+#: field:project.milestone.builder,suffix:0
+msgid "Suffix"
+msgstr "Suffix"
+
+#. module: project_milestone
+#: help:project.milestone.builder,suffix:0
+msgid "Suffix value of the record for the sequence"
+msgstr "Suffix value of the record for the sequence"
+
+#. module: project_milestone
+#: field:project.milestone.builder,message_summary:0
+msgid "Summary"
+msgstr "Summary"
+
+#. module: project_milestone
+#: field:project.milestone.builder,su:0
+msgid "Sun"
+msgstr "Sun"
+
+#. module: project_milestone
+#: field:project.milestone.builder,categ_ids:0
+msgid "Tags"
+msgstr "Tags"
+
+#. module: project_milestone
+#: model:ir.model,name:project_milestone.model_project_task
+msgid "Task"
+msgstr "Aufgabe"
+
+#. module: project_milestone
+#: view:project.milestone.builder:project_milestone.view_project_milestone_builder_form
+msgid "The"
+msgstr "The"
+
+#. module: project_milestone
+#: help:project.milestone.builder,number_increment:0
+msgid "The next number of the sequence will be incremented by this number"
+msgstr "The next number of the sequence will be incremented by this number"
+
+#. module: project_milestone
+#: help:project.project,pricelist_id:0
+msgid ""
+"The product to invoice is defined on the employee form, the price will be "
+"deducted by this pricelist on the product."
+msgstr ""
+"The product to invoice is defined on the employee form, the price will be "
+"deducted by this pricelist on the product."
+
+#. module: project_milestone
+#: field:project.milestone.builder,th:0
+msgid "Thu"
+msgstr "Thu"
+
+#. module: project_milestone
+#: field:project.project,to_invoice:0
+msgid "Timesheet Invoicing Ratio"
+msgstr "Timesheet Invoicing Ratio"
+
+#. module: project_milestone
+#: help:project.project,amount_invoiced:0
+msgid "Total invoiced"
+msgstr "Total invoiced"
+
+#. module: project_milestone
+#: field:project.milestone.builder,tu:0
+msgid "Tue"
+msgstr "Tue"
+
+#. module: project_milestone
+#: help:project.milestone.builder,implementation:0
+msgid ""
+"Two sequence object implementations are offered: Standard and 'No gap'. The "
+"later is slower than the former but forbids any gap in the sequence (while "
+"they are possible in the former)."
+msgstr ""
+"Two sequence object implementations are offered: Standard and 'No gap'. The "
+"later is slower than the former but forbids any gap in the sequence (while "
+"they are possible in the former)."
+
+#. module: project_milestone
+#: field:project.milestone.builder,message_unread:0
+msgid "Unread Messages"
+msgstr "Unread Messages"
+
+#. module: project_milestone
+#: view:project.milestone.builder:project_milestone.view_project_milestone_builder_form
+msgid "Until"
+msgstr "Until"
+
+#. module: project_milestone
+#: field:project.milestone.builder,we:0
+msgid "Wed"
+msgstr "Wed"
+
+#. module: project_milestone
+#: field:project.milestone.builder,week_list:0
+msgid "Weekday"
+msgstr "Weekday"
+
+#. module: project_milestone
+#: help:project.project,to_invoice:0
+msgid ""
+"You usually invoice 100% of the timesheets. But if you mix fixed price and "
+"timesheet invoicing, you may use another ratio. For instance, if you do a "
+"20% advance invoice (fixed price, based on a sales order), you should "
+"invoice the rest on timesheet with a 80% ratio."
+msgstr ""
+"You usually invoice 100% of the timesheets. But if you mix fixed price and "
+"timesheet invoicing, you may use another ratio. For instance, if you do a "
+"20% advance invoice (fixed price, based on a sales order), you should "
+"invoice the rest on timesheet with a 80% ratio."
+
+#. module: project_milestone
+#: field:project.milestone.builder,color_partner_id:0
+msgid "colorize"
+msgstr "colorize"
+
+#. module: project_milestone
+#: view:project.milestone.builder:project_milestone.view_project_milestone_builder_form
+msgid "or"
+msgstr "or"
+
+#. module: project_milestone
+#: model:ir.model,name:project_milestone.model_project_milestone_builder
+msgid "wizard to create project milestones as calendar event"
+msgstr "wizard to create project milestones as calendar event"
