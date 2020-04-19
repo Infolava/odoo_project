@@ -36,4 +36,4 @@ class project_task(models.Model):
     _name = 'project.task'
     _inherit = 'project.task'
     
-    milestone_id = fields.Many2one('project.milestone', string = 'Milestone')
+    milestone_ids = fields.Many2many('project.milestone', 'project_task_milestone_rel','milestone','task', string = 'Milestones')
