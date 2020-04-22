@@ -20,10 +20,11 @@
 # Checked out Version:   $LastChangedRevision$
 # HeadURL:               $HeadURL$
 # --------------------------------------------------------------------------------
-from openerp import models, fields
+from openerp import models, fields, api, _
 from datetime import datetime
 import pytz
 from openerp.tools import DEFAULT_SERVER_DATE_FORMAT as DF
+from openerp.exceptions import ValidationError
 
 class ir_sequence(models.Model):
     
@@ -48,5 +49,23 @@ class ir_sequence(models.Model):
         }
         return {key: t.strftime(sequence) for key, sequence in sequences.iteritems()}
     
+    @api.multi
+    def _next(self):
+        
+        if self._context and self._context.get('force_date') :
+            # Remove padding from sequence name and just use the prefix
+            d = self._interpolation_dict_context(context=self._context)
+            try:
+                interpolated_prefix = self._interpolate(self.prefix, d)
+                if interpolated_prefix == self.prefix :
+                    return super(ir_sequence, self)._next()
+            except KeyError, e:
+                raise ValidationError(_('Invalid prefix \'%s\'') % (e))
+            except ValueError:
+                raise ValidationError(_('Invalid prefix for sequence \'%s\'') % (self.name))
+            return interpolated_prefix
+      
+        return super(ir_sequence, self)._next()
+        
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4
 #eof $Id$
