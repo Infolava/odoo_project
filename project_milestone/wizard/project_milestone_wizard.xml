@@ -44,6 +44,7 @@
 									<field name="start_date" required="1"/>
                                     <field name="stop_date" invisible="1" />
 									<field name="allday" invisible="1"/>
+									<field name="partner_ids" invisible="1" />
 								</group>
 								<group attrs="{'invisible': [('recurrency','=',False)]}">
 									<label for="interval" />

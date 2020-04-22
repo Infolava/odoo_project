@@ -37,6 +37,7 @@ class project_milestone_builder(models.TransientModel):
     recurrency = fields.Boolean('Recurrent', default = True)
     padding = fields.Integer(default = 3)
     
+    
     @api.onchange('interval')
     def on_change(self):
         if not self.interval :
@@ -56,12 +57,14 @@ class project_milestone_builder(models.TransientModel):
             default['allday'] = True
             default['project_id'] = project.id
             default['final_date'] = project.date
+            default['partner_ids'] = [[6, False, [mem.partner_id.id for mem in project.members]]]
         return default
             
 # 
     @api.model
     def create(self, vals):
         vals['name'] = 'milestone.sequence'
+        vals['class'] = 'private'
         vals['event_id'] = self.env['calendar.event'].create(vals).id
         vals['code'] = 'milestone.sequence'
         vals['sequence_id'] = self.env['ir.sequence'].create(vals).id
@@ -74,7 +77,7 @@ class project_milestone_builder(models.TransientModel):
             for event in events :
                 new_name = self.pool.get('ir.sequence').next_by_id(self._cr, self._uid, self.sequence_id.id, context = {'force_date':event.start_date})
                 new_ev = event._detach_one_event({'name' : new_name})
-                self.env['project.milestone'].create({'project_id' : self.project_id.id, 'event_id' : new_ev[0]})
+                self.env['project.milestone'].create({'project_id' : self.project_id.id, 'event_id' : new_ev[0], 'description' : self.description})
         else :
             self.event_id.name = self.pool.get('ir.sequence').next_by_id(self._cr, self._uid, self.sequence_id.id, context = {'force_date':self.event_id.start_date})
             self.env['project.milestone'].create({'project_id' : self.project_id.id, 'event_id' : self.event_id.id})

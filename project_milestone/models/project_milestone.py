@@ -32,6 +32,7 @@ class project_milestone(models.Model):
     event_id = fields.Many2one('calendar.event')
     date = fields.Date(related = 'event_id.start_date', string = "Date")
     name = fields.Char(related = "event_id.name", string = "Name", store = True)
+    description = fields.Text('Description')
     
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4
