@@ -27,6 +27,7 @@
             <field name="inherit_id" ref="project.view_task_form2"/>
             <field name="arch" type="xml">
                 <field name="progress" position="after">
+                	<field name="milestone_id" domain="[('project_id', '=', project_id)]" options="{'no_create_edit' : True}" />
                     <field name="milestone_ids" domain="[('project_id', '=', project_id)]" options="{'no_create_edit' : True}" widget="many2many_tags"/>
                 </field>
             </field>
