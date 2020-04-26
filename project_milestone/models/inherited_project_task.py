@@ -69,5 +69,5 @@ class project_task(models.Model):
             milestones_ids += [milestone.id for milestone in milestones]
             task.milestone_ids =  [[6, False, milestones_ids]]
             
-    mmilestone_ids = fields.Many2many('project.milestone', 'project_task_milestone_rel','milestone','task',compute = _get_previous_milestones, string = 'Previous Milestones', readonly=True)
+    milestone_ids = fields.Many2many('project.milestone', 'project_task_milestone_rel','milestone','task',compute = _get_previous_milestones, string = 'Previous Milestones', readonly=True)
     milestone_id = fields.Many2one('project.milestone', compute = _get_milestone, string = 'Planned Milestone', store = True)
