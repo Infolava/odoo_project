@@ -21,6 +21,8 @@
 # HeadURL:               $HeadURL$
 # --------------------------------------------------------------------------------
 from openerp import models, fields, api, _, SUPERUSER_ID
+import datetime
+from openerp.tools import DEFAULT_SERVER_DATE_FORMAT as DF
 
 class project_project(models.Model):
     """
@@ -37,6 +39,18 @@ class project_project(models.Model):
         
     milestone_ids = fields.One2many('project.milestone', 'project_id', string = 'Milestones')
     count_milestone = fields.Integer(compute = _count_milestone, string = "Milestones")
+    
+               
+    @api.multi
+    def action_view_tasks_milestone(self):
+        self.ensure_one()
+        task_project_action = self.env.ref('project.act_project_project_2_project_task_all')
+        result = task_project_action.read()[0]
+        if self.milestone_ids:
+            current_milestone = self.milestone_ids.filtered(lambda mil : datetime.datetime.strptime(mil.date, DF) >= datetime.datetime.today())
+            if current_milestone :
+                result['context'] =result['context'].split('}')[0] + "'search_default_milestone_id' : %s }" % current_milestone[0].id
+        return result
     
     @api.multi
     def return_milestone_view(self) :

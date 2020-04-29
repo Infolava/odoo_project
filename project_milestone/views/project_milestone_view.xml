@@ -71,11 +71,31 @@
 				action="action_project_milestone_form_view" groups="project.group_project_manager"/>
 		
 		<!-- Add Milestone to project view as box button -->
+		
+        <record id="extended_view_project_kanban" model="ir.ui.view">
+            <field name="name">Projects</field>
+            <field name="model">project.project</field>
+            <field name="inherit_id" ref="project.view_project_kanban" />
+            <field name="arch" type="xml">
+            
+            	<xpath expr="//a[@name='%(project.act_project_project_2_project_task_all)d']" position="attributes">
+                	<attribute name="type">object</attribute>
+            		<attribute name="name">action_view_tasks_milestone</attribute>
+            	</xpath>
+            </field>
+         </record>
+           
         <record id="extended_view_project_form" model="ir.ui.view">
             <field name="name">Project Milestone</field>
             <field name="model">project.project</field>
             <field name="inherit_id" ref="project.edit_project" />
             <field name="arch" type="xml">
+            
+            
+            	<xpath expr="//button[child::field[@name='task_count']]" position="attributes">
+            		<attribute name="type">object</attribute>
+            		<attribute name="name">action_view_tasks_milestone</attribute>
+            	</xpath>
                 <xpath expr="//button[@name='attachment_tree_view']" position="after">
 					     <button class="oe_inline oe_stat_button" type="object" 
                             name="return_milestone_view"  icon="fa-calendar-o" >
