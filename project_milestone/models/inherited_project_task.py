@@ -38,20 +38,19 @@ class project_task(models.Model):
     _name = 'project.task'
     _inherit = 'project.task'
     
-    
-    @api.depends('date_deadline', 'date_start', 'project_id')
+    @api.depends('date_deadline', 'date_start', 'project_id','stage_id')
     def _get_milestone(self):
         for task in self :
-            domain = [('project_id', '=', task.project_id.id)]
-                
-            if task.date_deadline :
-                domain.append( ('date', '>=', task.date_deadline))
-            else :
-                # Use today as start day if no deadline or start date specified
-                date_start = task.date_start if task.date_start else date.today()
-                domain.append(('date', '>=', date_start))
-            milestones = self.env['project.milestone'].search(domain)
-            task.milestone_id = milestones.ids[0] if milestones else False
+            if task.stage_id not in task.project_id.type_ids.filtered(lambda x : x.closed):
+                domain = [('project_id', '=', task.project_id.id)]
+                if task.date_deadline :
+                    domain.append( ('date', '>=', task.date_deadline))
+                else :
+                    # Use today as start day if no deadline or start date specified
+                    date_start = task.date_start if task.date_start else date.today()
+                    domain.append(('date', '>=', date_start))
+                milestones = self.env['project.milestone'].search(domain)
+                task.milestone_id = milestones.ids[0] if milestones else False
         
     @api.depends('date_deadline', 'date_start', 'project_id')
     def _get_previous_milestones(self):
@@ -59,7 +58,6 @@ class project_task(models.Model):
             milestones_ids=[]
             date_start = task.date_start if task.date_start else date.today()
             domain = [('project_id', '=', task.project_id.id),('date', '>=', date_start)]
-                
             if task.date_deadline :
                 if fields.Datetime.from_string(task.date_deadline).date() >= date.today() :
                     domain.append( ('date', '<=', task.date_deadline))
@@ -71,3 +69,4 @@ class project_task(models.Model):
             
     milestone_ids = fields.Many2many('project.milestone', 'project_task_milestone_rel','milestone','task',compute = _get_previous_milestones, string = 'Previous Milestones', readonly=True, store = True)
     milestone_id = fields.Many2one('project.milestone', compute = _get_milestone, string = 'Planned Milestone', store = True)
+    
