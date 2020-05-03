@@ -47,6 +47,7 @@
               'views/project_milestone_view.xml',
               'security/project_milestone_right_rule.xml',
               'views/inherited_project_task_view.xml',
+              'data/project_task_stage.xml',
                   ],
     'active': False,
     'installable': True,
