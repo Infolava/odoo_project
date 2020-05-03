@@ -38,7 +38,7 @@ class project_task(models.Model):
     _name = 'project.task'
     _inherit = 'project.task'
     
-    @api.depends('date_deadline', 'date_start', 'project_id','stage_id')
+    @api.depends('date_deadline', 'date_start', 'project_id','stage_id', 'project_id.milestone_ids')
     def _get_milestone(self):
         for task in self :
             task.milestone_id = False
@@ -50,7 +50,7 @@ class project_task(models.Model):
                     # Use today as start day if no deadline or start date specified
                     date_start = task.date_start if task.date_start else date.today()
                     domain.append(('date', '>=', date_start))
-                milestones = self.env['project.milestone'].search(domain)
+                milestones = self.env['project.milestone'].search(domain, order = "date asc")
                 task.milestone_id = milestones.ids[0] if milestones else False
                 
         
