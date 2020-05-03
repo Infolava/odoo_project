@@ -37,6 +37,7 @@
     'depends' : [
                  'project',
                  'calendar',
+                 'project_stage_closed',
                 ],
     'demo_xml' : [],
     'summary': 'Addon to observe the progress of a project',
