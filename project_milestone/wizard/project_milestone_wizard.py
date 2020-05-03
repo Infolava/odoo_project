@@ -57,7 +57,7 @@ class project_milestone_builder(models.TransientModel):
             default['allday'] = True
             default['project_id'] = project.id
             default['final_date'] = project.date
-            default['partner_ids'] = [[6, False, [mem.partner_id.id for mem in project.members]]]
+            default['partner_ids'] = [[6, False, [mem.partner_id.id for mem in project.members] + [project.user_id.partner_id.id]]]
         return default
             
 # 
