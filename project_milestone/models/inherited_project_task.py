@@ -41,6 +41,7 @@ class project_task(models.Model):
     @api.depends('date_deadline', 'date_start', 'project_id','stage_id')
     def _get_milestone(self):
         for task in self :
+            task.milestone_id = False
             if task.stage_id not in task.project_id.type_ids.filtered(lambda x : x.closed):
                 domain = [('project_id', '=', task.project_id.id)]
                 if task.date_deadline :
@@ -51,6 +52,7 @@ class project_task(models.Model):
                     domain.append(('date', '>=', date_start))
                 milestones = self.env['project.milestone'].search(domain)
                 task.milestone_id = milestones.ids[0] if milestones else False
+                
         
     @api.depends('date_deadline', 'date_start', 'project_id')
     def _get_previous_milestones(self):
