@@ -57,6 +57,8 @@ class ir_sequence(models.Model):
             d = self._interpolation_dict_context(context=self._context)
             try:
                 interpolated_prefix = self._interpolate(self.prefix, d)
+                if self._context.get('is_recurrent') is False:
+                    return interpolated_prefix
                 if interpolated_prefix == self.prefix :
                     return super(ir_sequence, self)._next()
             except KeyError, e:
