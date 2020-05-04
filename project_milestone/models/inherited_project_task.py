@@ -63,8 +63,8 @@ class project_task(models.Model):
                     domain.append( ('date', '<=', task.date_deadline))
                 else :
                     domain.append( ('date', '<=', date.today()))
-            milestones = self.env['project.milestone'].search(domain)
-            milestones_ids += [milestone.id for milestone in milestones]
+                milestones = self.env['project.milestone'].search(domain)
+                milestones_ids += [milestone.id for milestone in milestones]
             task.milestone_ids =  [[6, False, milestones_ids]]
             
     milestone_ids = fields.Many2many('project.milestone', 'project_task_milestone_rel','milestone','task',compute = _get_previous_milestones, string = 'Previous Milestones', readonly=True, store = True)
