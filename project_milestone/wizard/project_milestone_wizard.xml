@@ -107,7 +107,7 @@
 		</record>
     
 		<record id="action_create_project_milestone_wizard_view" model="ir.actions.act_window">
-			<field name="name">Create Project Milestone</field>
+			<field name="name">Add Project Milestone</field>
 			<field name="res_model">project.milestone.builder</field>
 			<field name="view_type">form</field>
 			<field name="view_mode">form</field>

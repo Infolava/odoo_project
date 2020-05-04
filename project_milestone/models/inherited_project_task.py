@@ -44,12 +44,11 @@ class project_task(models.Model):
             task.milestone_id = False
             if task.stage_id not in task.project_id.type_ids.filtered(lambda x : x.closed):
                 domain = [('project_id', '=', task.project_id.id)]
-                if task.date_deadline :
+                if task.date_deadline and fields.Date.from_string(task.date_deadline) >= date.today():
                     domain.append( ('date', '>=', task.date_deadline))
-                elif  task.date_start :
-                    domain.append(('date', '>=', task.date_start))
-                milestones = self.env['project.milestone'].search(domain, order = "date asc")
-                task.milestone_id = milestones.ids[0] if milestones else False
+
+                    milestones = self.env['project.milestone'].search(domain, order = "date asc")
+                    task.milestone_id = milestones.ids[0] if milestones else False
                 
         
     @api.depends('date_deadline', 'date_start', 'project_id')
