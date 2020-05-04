@@ -46,10 +46,8 @@ class project_task(models.Model):
                 domain = [('project_id', '=', task.project_id.id)]
                 if task.date_deadline :
                     domain.append( ('date', '>=', task.date_deadline))
-                else :
-                    # Use today as start day if no deadline or start date specified
-                    date_start = task.date_start if task.date_start else date.today()
-                    domain.append(('date', '>=', date_start))
+                elif  task.date_start :
+                    domain.append(('date', '>=', task.date_start))
                 milestones = self.env['project.milestone'].search(domain, order = "date asc")
                 task.milestone_id = milestones.ids[0] if milestones else False
                 
