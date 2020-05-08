@@ -38,34 +38,30 @@ class project_task(models.Model):
     _name = 'project.task'
     _inherit = 'project.task'
     
+       
     @api.depends('date_deadline', 'date_start', 'project_id','stage_id', 'project_id.milestone_ids')
-    def _get_milestone(self):
+    def _get_milestones(self):
         for task in self :
+            task.milestone_ids = [[6, False, []]]
             task.milestone_id = False
-            if task.stage_id not in task.project_id.type_ids.filtered(lambda x : x.closed):
+            domain = []
+            if task.project_id :
                 domain = [('project_id', '=', task.project_id.id)]
-                if task.date_deadline and fields.Date.from_string(task.date_deadline) >= date.today():
-                    domain.append( ('date', '>=', task.date_deadline))
-
+                if task.date_start :
+                    domain.append(('date', '>=', fields.Datetime.from_string(task.date_start).date()))
+                domain_prev = domain[:]
+                if task.date_deadline : 
+                    if fields.Date.from_string(task.date_deadline) >= date.today() :
+                        domain.append(('date', '>=', date.today()))
+                        domain_prev.append(('date', '<' , date.today()))
+                    else :
+                        domain_prev.append(('date', '<' , task.date_deadline))
                     milestones = self.env['project.milestone'].search(domain, order = "date asc")
                     task.milestone_id = milestones.ids[0] if milestones else False
-                
-        
-    @api.depends('date_deadline', 'date_start', 'project_id')
-    def _get_previous_milestones(self):
-        for task in self :
-            milestones_ids=[]
-            date_start = task.date_start if task.date_start else date.today()
-            domain = [('project_id', '=', task.project_id.id),('date', '>=', date_start)]
-            if task.date_deadline :
-                if fields.Datetime.from_string(task.date_deadline).date() >= date.today() :
-                    domain.append( ('date', '<=', task.date_deadline))
-                else :
-                    domain.append( ('date', '<=', date.today()))
-                milestones = self.env['project.milestone'].search(domain)
-                milestones_ids += [milestone.id for milestone in milestones]
-            task.milestone_ids =  [[6, False, milestones_ids]]
-            
-    milestone_ids = fields.Many2many('project.milestone', 'project_task_milestone_rel','milestone','task',compute = _get_previous_milestones, string = 'Previous Milestones', readonly=True, store = True)
-    milestone_id = fields.Many2one('project.milestone', compute = _get_milestone, string = 'Planned Milestone', store = True)
+                    task.milestone_ids =  [[6, False, self.env['project.milestone'].search(domain_prev, order = "date asc").ids]]
+
+
+    
+    milestone_ids = fields.Many2many('project.milestone', 'project_task_milestone_rel','milestone','task',compute = _get_milestones, string = 'Previous Milestones', readonly=True, store = True)
+    milestone_id = fields.Many2one('project.milestone', compute = _get_milestones, string = 'Current Milestone', store = True)
     
