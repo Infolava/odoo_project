@@ -39,7 +39,7 @@ class project_task(models.Model):
     _inherit = 'project.task'
     
        
-    @api.depends('date_deadline', 'date_start', 'project_id','stage_id', 'project_id.milestone_ids')
+    @api.depends('date_deadline', 'date_start', 'project_id', 'stage_id', 'project_id.milestone_ids')
     def _get_milestones(self):
         for task in self :
             task.milestone_ids = [[6, False, []]]
@@ -54,11 +54,20 @@ class project_task(models.Model):
                     if fields.Date.from_string(task.date_deadline) >= date.today() :
                         domain.append(('date', '>=', date.today()))
                         domain_prev.append(('date', '<' , date.today()))
+                        milestones = self.env['project.milestone'].search(domain, order="date asc")
+                        prev_mil = self.env['project.milestone'].search(domain_prev, order="date asc").ids
+                        if milestones :
+                            if task.stage_id not in task.project_id.type_ids.filtered(lambda x : x.closed) :
+                                
+                                task.milestone_id = milestones.ids[0]
+                                
+                            else :
+                                task.milestone_ids = [[6, False, prev_mil+ [milestones.ids[0]]]]
+                        else :
+                            task.milestone_ids = [[6, False, prev_mil]]
                     else :
                         domain_prev.append(('date', '<' , task.date_deadline))
-                    milestones = self.env['project.milestone'].search(domain, order = "date asc")
-                    task.milestone_id = milestones.ids[0] if milestones else False
-                    task.milestone_ids =  [[6, False, self.env['project.milestone'].search(domain_prev, order = "date asc").ids]]
+                        task.milestone_ids =  [[6, False, self.env['project.milestone'].search(domain_prev, order = "date asc").ids]]
 
 
     

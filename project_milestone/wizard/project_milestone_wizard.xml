@@ -18,7 +18,7 @@
 
 
 		<record model="ir.ui.view" id="view_project_milestone_builder_form">
-			<field name="name">Create Project MileStones</field>
+			<field name="name">Add Project Milestones</field>
 			<field name="model">project.milestone.builder</field>
 			<field name="priority" eval="1" />
 			<field name="arch" type="xml">
@@ -97,7 +97,7 @@
 						</group>
 					</sheet>
 					<footer>
-						<button name="create_milestone" type="object" string="Create Milestone" />
+						<button name="create_milestone" type="object" string="Add Milestone" />
 						or
 						<button string="Cancel" special="cancel" />
 					</footer>
@@ -116,7 +116,7 @@
 		</record>
 		
 		<act_window id="action_project_milestone_more"
-		    name="Create  Milestone"
+		    name="Add  Milestone"
 		    src_model="project.project"
 		    res_model="project.milestone.builder"
 		    view_type="form" view_mode="form"
