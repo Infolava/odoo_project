@@ -20,7 +20,7 @@
 # Checked out Version:   $LastChangedRevision$
 # HeadURL:               $HeadURL$
 # --------------------------------------------------------------------------------
-from openerp import models, fields
+from openerp import models, fields, api
 
 class project_milestone(models.Model):
     """
@@ -36,6 +36,27 @@ class project_milestone(models.Model):
     name = fields.Char(related = "event_id.name", string = "Name", store = True)
     description = fields.Text('Description')
     
+    
+    @api.model
+    def create(self,values):
+        """Override create method to enable create milestone from calendar form view"""
+        
+        if values['event_id'] is False:
+            project = self.env['project.project'].browse(values['project_id'])
+            meeting_vals = {}
+            meeting_vals.update({'start_date': values['date'], 'stop_date': values['date']})
+            meeting_vals.update({'name': values['name']})
+            meeting_vals.update({
+                                 'duration': 24,
+                                 'class': 'private',
+                                 'allday' : True,
+                                 'project_id':values['project_id'],
+                                 'partner_ids' : [[6, False, [mem.partner_id.id for mem in project.members] + [project.user_id.partner_id.id]]]
+                                 })
+             
+            values['event_id'] = self.env['calendar.event'].with_context(no_email = True).create(meeting_vals).id
+        return super(project_milestone, self).create(values)
+
 
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4
 #eof $Id$

@@ -25,11 +25,11 @@
 			<field name="model">project.milestone</field>
 			<field name="type">form</field>
 			<field name="arch" type="xml">
-				<form string="Project Milestones" create="0">
+				<form string="Project Milestones">
 						<group>
-							<field name="name" />
-							<field name="date"  />
-							<field name="project_id" />
+							<field name="name" required="1"/>
+							<field name="date" required="1"/>
+							<field name="project_id" required="1"/>
 							<field name="event_id" invisible="1"/>
 						</group>
 				</form>
@@ -41,7 +41,7 @@
 			<field name="model">project.milestone</field>
 			<field name="type">tree</field>
 			<field name="arch" type="xml">
-				<tree string="Project Milestones" create="0">
+				<tree string="Project Milestones">
 					<field name="name" />
 					<field name="project_id" />
 					<field name="date"  />
