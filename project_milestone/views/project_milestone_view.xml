@@ -53,7 +53,7 @@
             <field name="name">project.milestone.calendar</field>
             <field name="model">project.milestone</field>
             <field name="arch" type="xml">
-                <calendar string="Milestone" display="[name]" date_start="date" color="project_id" quick_add="False">
+                <calendar string="Milestone" display="[name]" date_start="date" color="project_id" quick_add="False" event_open_popup="%(view_project_milestone_form)s">
                     <field name="name"/>
                 </calendar>
             </field>
