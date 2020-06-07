@@ -50,24 +50,24 @@ class project_task(models.Model):
                 if task.date_start :
                     domain.append(('date', '>=', fields.Datetime.from_string(task.date_start).date()))
                 domain_prev = domain[:]
-                if task.date_deadline : 
-                    if fields.Date.from_string(task.date_deadline) >= date.today() :
-                        domain.append(('date', '>=', date.today()))
-                        domain_prev.append(('date', '<' , date.today()))
-                        milestones = self.env['project.milestone'].search(domain, order="date asc")
-                        prev_mil = self.env['project.milestone'].search(domain_prev, order="date asc").ids
-                        if milestones :
-                            if task.stage_id not in task.project_id.type_ids.filtered(lambda x : x.closed) :
-                                
-                                task.milestone_id = milestones.ids[0]
-                                
-                            else :
-                                task.milestone_ids = [[6, False, prev_mil+ [milestones.ids[0]]]]
+                task.date_deadline = task.date_deadline if task.date_deadline else task.project_id.date
+                if fields.Date.from_string(task.date_deadline) >= date.today() :
+                    domain.append(('date', '>=', date.today()))
+                    domain_prev.append(('date', '<' , date.today()))
+                    milestones = self.env['project.milestone'].search(domain, order="date asc")
+                    prev_mil = self.env['project.milestone'].search(domain_prev, order="date asc").ids
+                    if milestones :
+                        if task.stage_id not in task.project_id.type_ids.filtered(lambda x : x.closed) :
+                            
+                            task.milestone_id = milestones.ids[0]
+                            
                         else :
-                            task.milestone_ids = [[6, False, prev_mil]]
+                            task.milestone_ids = [[6, False, prev_mil+ [milestones.ids[0]]]]
                     else :
-                        domain_prev.append(('date', '<' , task.date_deadline))
-                        task.milestone_ids =  [[6, False, self.env['project.milestone'].search(domain_prev, order = "date asc").ids]]
+                        task.milestone_ids = [[6, False, prev_mil]]
+                else :
+                    domain_prev.append(('date', '<' , task.date_deadline))
+                    task.milestone_ids =  [[6, False, self.env['project.milestone'].search(domain_prev, order = "date asc").ids]]
 
 
     
