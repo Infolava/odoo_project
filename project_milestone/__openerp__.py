@@ -30,7 +30,7 @@
 
 {
     'name' : 'Project Milestones',
-    'version' : '0.0.1',
+    'version' : '3.0.1',
     'author' : 'Infolava',
     'website': 'http://www.infolava.ch',
     'category' : 'Project Management',
