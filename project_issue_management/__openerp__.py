@@ -28,6 +28,7 @@
     'category' : 'Project Management',
     'depends' : [
                  'project_issue',
+                 #'analytic'
                 ],
     'demo_xml' : [],
     'summary': 'Extension for project issue model in order to create tickets based on customer contracts',

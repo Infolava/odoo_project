@@ -32,7 +32,6 @@ class project_issue(models.Model):
     
     issue_ref = fields.Char('Reference', readonly = True, copy = False)
     contract_id = fields.Many2one('account.analytic.account', 'Contract', readonly = True)
-    contract_ref = fields.Char(related ='contract_id.code', string ='Contract Reference', readonly = True)
     
     
     @api.model
@@ -40,5 +39,15 @@ class project_issue(models.Model):
         reference = {'issue_ref': self.env['ir.sequence'].get('project.issue.sequence')}
         vals.update(reference)
         return super(project_issue,self).create(vals)
+    
+#===============================================================================
+# class account_analytic_account(models.Model):
+#     """
+#         Extend the account analytic account in order to change rec_name
+#     """
+#     _name = 'account.analytic.account'
+#     _inherit = 'account.analytic.account'
+#     _rec_name = 'code'
+#===============================================================================
 # vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4
 #eof $Id$

@@ -30,9 +30,9 @@
 	                    <field name="issue_ref" readonly="1"/>
 	                </h3>
 	            </xpath>
-                <field name="active" position="after">
-	                    <field name="contract_ref" readonly="1" />
-                </field>
+                <xpath expr="//group/div" position="after">
+	                    <field name="contract_id" readonly="1" />
+                </xpath>
             </field>
         </record>
         
