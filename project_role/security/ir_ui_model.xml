@@ -70,7 +70,7 @@
 			<field name="perm_unlink">1</field>
 			<field name="name">project.members [c1_r1_u1_d1]</field>
 			<field name="model_id" model="ir.model" search="[('model', '=', 'project.member')]"/>
-			<field name="group_id" ref="project.group_project_user"/>
+			<field name="group_id" ref="project.group_project_manager"/>
 		</record>
 
 		<record model="ir.model.access" id="poject_employee_RO_PU">
@@ -83,7 +83,29 @@
 			<field name="group_id" ref="project.group_project_user"/>
 		</record>
 		
+		<record model="ir.model.access" id="poject_employee_RO_HU">
+			<field name="perm_create"></field>
+			<field name="perm_read">1</field>
+			<field name="perm_write"></field>
+			<field name="perm_unlink"></field>
+			<field name="name">project.members [c0_r1_u0_d0]</field>
+			<field name="model_id" model="ir.model" search="[('model', '=', 'project.member')]"/>
+			<field name="group_id" ref="base.group_user"/>
+		</record>
+		
+		<record model="ir.model.access" id="poject_role_RO_HU">
+			<field name="perm_create"></field>
+			<field name="perm_read">1</field>
+			<field name="perm_write"></field>
+			<field name="perm_unlink"></field>
+			<field name="name">project.role [c0_r1_u0_d0]</field>
+			<field name="model_id" model="ir.model" search="[('model', '=', 'project.role')]"/>
+			<field name="group_id" ref="base.group_user"/>
+		</record>
+		
 		<!-- Access Right Definition for hr.employee model -->
+		
+
 		<record model="ir.model.access" id="object_employee_RW_PM">
 			<field name="perm_create"></field>
 			<field name="perm_read">1</field>
